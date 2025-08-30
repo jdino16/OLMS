@@ -16,7 +16,7 @@ import './utils/alerts.css';
 axios.defaults.withCredentials = true;
 
 function App() {
-  const [userType, setUserType] = useState(null); // 'admin', 'instructor', or 'student'
+  const [userType, setUserType] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showInstructorRegister, setShowInstructorRegister] = useState(false);
@@ -132,9 +132,21 @@ function App() {
   if (loading) {
     return (
       <div className="loading-container">
-        <div className="loading-spinner">
-          <div className="spinner-ring"></div>
-          <p>Loading your learning experience...</p>
+        <div className="animated-spinner">
+          <div className="book-icon">
+            <div className="book-cover">
+              <div className="book-spine"></div>
+              <div className="book-page book-page-1"></div>
+              <div className="book-page book-page-2"></div>
+              <div className="book-page book-page-3"></div>
+            </div>
+          </div>
+          <div className="loading-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <p className="loading-text">Preparing your learning journey</p>
         </div>
       </div>
     );
@@ -153,8 +165,11 @@ function App() {
         
         <div className="login-options">
           <div className="logo-section">
-            <div className="logo-icon">
-              <i className="fas fa-graduation-cap"></i>
+            <div className="animated-logo">
+              <div className="logo-icon">
+                <i className="fas fa-graduation-cap"></i>
+              </div>
+              <div className="pulse-ring"></div>
             </div>
             <h1>Learning Management System</h1>
             <p className="subtitle">Empowering Education Through Technology</p>
@@ -275,7 +290,6 @@ function App() {
     />;
   }
 
-  // This should never be reached, but just in case
   return null;
 }
 

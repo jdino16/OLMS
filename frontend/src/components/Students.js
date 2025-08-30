@@ -28,8 +28,9 @@ const Students = () => {
       setLoading(true);
       const response = await axios.get('/api/students');
       setStudents(response.data);
+      setError('');
     } catch (error) {
-      setError('Failed to fetch students');
+      setError('Failed to fetch students. Please try again.');
       console.error('Error fetching students:', error);
     } finally {
       setLoading(false);
@@ -56,6 +57,7 @@ const Students = () => {
       address: ''
     });
     setEditingStudent(null);
+    setError('');
   };
 
   const handleSubmit = async (e) => {
@@ -68,11 +70,16 @@ const Students = () => {
         await axios.post('/api/students', formData);
       }
       
-      fetchStudents();
-      setShowForm(false);
-      resetForm();
+      // Add success animation
+      document.querySelector('.form-modal').classList.add('success-animation');
+      
+      setTimeout(() => {
+        fetchStudents();
+        setShowForm(false);
+        resetForm();
+      }, 500);
     } catch (error) {
-      setError(error.response?.data?.error || 'Failed to save student');
+      setError(error.response?.data?.error || 'Failed to save student. Please try again.');
     }
   };
 
@@ -89,6 +96,7 @@ const Students = () => {
       address: student.address || ''
     });
     setShowForm(true);
+    setError('');
   };
 
   const handleDelete = async (studentId) => {
@@ -97,19 +105,23 @@ const Students = () => {
         await axios.delete(`/api/students/${studentId}`);
         fetchStudents();
       } catch (error) {
-        setError('Failed to delete student');
+        setError('Failed to delete student. Please try again.');
       }
     }
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
   if (loading) {
     return (
       <div className="loading-container">
-        <i className="fas fa-spinner fa-spin"></i>
+        <i className="fas fa-spinner"></i>
         <p>Loading students...</p>
       </div>
     );
@@ -118,7 +130,10 @@ const Students = () => {
   return (
     <div className="students-container">
       <div className="page-header">
-        <h2>Manage Students</h2>
+        <h2>
+          <i className="fas fa-user-graduate"></i>
+          Manage Students
+        </h2>
         <button 
           className="btn btn-primary"
           onClick={() => {
@@ -126,15 +141,21 @@ const Students = () => {
             setShowForm(true);
           }}
         >
-          <i className="fas fa-plus"></i>
+          <i className="fas fa-plus-circle"></i>
           Add Student
         </button>
       </div>
 
       {error && (
         <div className="error-message">
-          <i className="fas fa-exclamation-circle"></i>
+          <i className="fas fa-exclamation-triangle"></i>
           {error}
+          <button 
+            onClick={() => setError('')}
+            style={{ background: 'none', border: 'none', color: 'inherit', marginLeft: 'auto', cursor: 'pointer' }}
+          >
+            <i className="fas fa-times"></i>
+          </button>
         </div>
       )}
 
@@ -142,7 +163,10 @@ const Students = () => {
         <div className="form-overlay">
           <div className="form-modal">
             <div className="form-header">
-              <h3>{editingStudent ? 'Edit Student' : 'Add New Student'}</h3>
+              <h3>
+                <i className={`fas ${editingStudent ? 'fa-user-edit' : 'fa-user-plus'}`}></i>
+                {editingStudent ? 'Edit Student' : 'Add New Student'}
+              </h3>
               <button 
                 className="close-btn"
                 onClick={() => {
@@ -157,7 +181,10 @@ const Students = () => {
             <form onSubmit={handleSubmit} className="student-form">
               <div className="form-row">
                 <div className="form-group">
-                  <label>Username *</label>
+                  <label>
+                    <i className="fas fa-user"></i>
+                    Username *
+                  </label>
                   <input
                     type="text"
                     name="username"
@@ -167,7 +194,10 @@ const Students = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Full Name *</label>
+                  <label>
+                    <i className="fas fa-id-card"></i>
+                    Full Name *
+                  </label>
                   <input
                     type="text"
                     name="student_name"
@@ -180,7 +210,10 @@ const Students = () => {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Password {!editingStudent && '*'}</label>
+                  <label>
+                    <i className="fas fa-lock"></i>
+                    Password {!editingStudent && '*'}
+                  </label>
                   <input
                     type="password"
                     name="password"
@@ -191,7 +224,10 @@ const Students = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Date of Birth *</label>
+                  <label>
+                    <i className="fas fa-calendar"></i>
+                    Date of Birth *
+                  </label>
                   <input
                     type="date"
                     name="dob"
@@ -204,7 +240,10 @@ const Students = () => {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Gender *</label>
+                  <label>
+                    <i className="fas fa-venus-mars"></i>
+                    Gender *
+                  </label>
                   <select
                     name="gender"
                     value={formData.gender}
@@ -217,7 +256,10 @@ const Students = () => {
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>Phone Number *</label>
+                  <label>
+                    <i className="fas fa-phone"></i>
+                    Phone Number *
+                  </label>
                   <input
                     type="tel"
                     name="phone_number"
@@ -229,7 +271,10 @@ const Students = () => {
               </div>
 
               <div className="form-group">
-                <label>Email</label>
+                <label>
+                  <i className="fas fa-envelope"></i>
+                  Email
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -239,7 +284,10 @@ const Students = () => {
               </div>
 
               <div className="form-group">
-                <label>Address</label>
+                <label>
+                  <i className="fas fa-map-marker-alt"></i>
+                  Address
+                </label>
                 <textarea
                   name="address"
                   value={formData.address}
@@ -249,13 +297,19 @@ const Students = () => {
               </div>
 
               <div className="form-actions">
-                <button type="button" className="btn btn-secondary" onClick={() => {
-                  setShowForm(false);
-                  resetForm();
-                }}>
+                <button 
+                  type="button" 
+                  className="btn btn-secondary" 
+                  onClick={() => {
+                    setShowForm(false);
+                    resetForm();
+                  }}
+                >
+                  <i className="fas fa-times"></i>
                   Cancel
                 </button>
                 <button type="submit" className="btn btn-primary">
+                  <i className={`fas ${editingStudent ? 'fa-save' : 'fa-user-plus'}`}></i>
                   {editingStudent ? 'Update' : 'Create'} Student
                 </button>
               </div>
@@ -282,12 +336,31 @@ const Students = () => {
             {students.map((student) => (
               <tr key={student.id}>
                 <td>{student.id}</td>
-                <td>{student.username}</td>
-                <td>{student.student_name}</td>
-                <td>{student.gender}</td>
-                <td>{student.phone_number}</td>
-                <td>{student.email || '-'}</td>
-                <td>{formatDate(student.created_at)}</td>
+                <td>
+                  <i className="fas fa-user" style={{marginRight: '8px', color: '#6c757d'}}></i>
+                  {student.username}
+                </td>
+                <td>
+                  <i className="fas fa-id-card" style={{marginRight: '8px', color: '#6c757d'}}></i>
+                  {student.student_name}
+                </td>
+                <td>
+                  <i className={`fas ${student.gender === 'Male' ? 'fa-mars' : student.gender === 'Female' ? 'fa-venus' : 'fa-genderless'}`} 
+                     style={{marginRight: '8px', color: '#6c757d'}}></i>
+                  {student.gender}
+                </td>
+                <td>
+                  <i className="fas fa-phone" style={{marginRight: '8px', color: '#6c757d'}}></i>
+                  {student.phone_number}
+                </td>
+                <td>
+                  <i className="fas fa-envelope" style={{marginRight: '8px', color: '#6c757d'}}></i>
+                  {student.email || '-'}
+                </td>
+                <td>
+                  <i className="fas fa-calendar" style={{marginRight: '8px', color: '#6c757d'}}></i>
+                  {formatDate(student.created_at)}
+                </td>
                 <td className="actions">
                   <button 
                     className="btn btn-sm btn-edit"
@@ -295,6 +368,7 @@ const Students = () => {
                     title="Edit"
                   >
                     <i className="fas fa-edit"></i>
+                    Edit
                   </button>
                   <button 
                     className="btn btn-sm btn-delete"
@@ -302,6 +376,7 @@ const Students = () => {
                     title="Delete"
                   >
                     <i className="fas fa-trash"></i>
+                    Delete
                   </button>
                 </td>
               </tr>
@@ -320,6 +395,7 @@ const Students = () => {
                 setShowForm(true);
               }}
             >
+              <i className="fas fa-plus-circle"></i>
               Add First Student
             </button>
           </div>

@@ -7,7 +7,16 @@
 
 ## Abstract
 
-This report details the development of an Online Learning Management System (OLMS) designed to provide a comprehensive, interactive, and intelligent platform for online education. The system addresses the growing demand for flexible and personalized learning experiences by integrating core LMS functionalities with advanced AI capabilities. The OLMS features a robust Python-based backend (Flask) handling data management, user authentication, and AI-driven course recommendations and quiz generation. The dynamic frontend, built with React.js, offers intuitive interfaces for students, instructors, and administrators, facilitating course management, progress tracking, feedback mechanisms, and communication. This project demonstrates a full-stack software solution, emphasizing modular design, user-centric features, and the application of modern web technologies.
+This project presents the design and implementation of an Online Learning Management System (OLMS) that integrates core educational functionalities with advanced Artificial Intelligence (AI) capabilities. Addressing the limitations of conventional e-learning platforms, this system aims to provide a personalized and adaptive learning experience for students, while streamlining administrative and instructional tasks.
+
+The OLMS is architected as a three-tier web application, comprising a Python/Flask-based backend responsible for business logic, data management, and AI processing (including course recommendations and quiz generation). A dynamic frontend, developed using React.js, ensures an intuitive and responsive user interface across distinct roles: Student, Instructor, and Administrator. The database layer, implemented with MySQL, provides robust data persistence for all system operations.
+
+Key functionalities include comprehensive user authentication, course enrollment and progress tracking, AI-driven personalized learning pathways, automated quiz generation, and integrated communication and feedback mechanisms. The development adhered to an iterative methodology, emphasizing modularity and maintainability.
+
+This report details the system's architecture, design choices, implementation strategies, and testing approach. The project demonstrates the practical application of modern full-stack development principles and AI integration to solve real-world educational challenges, contributing a scalable and intelligent solution to the e-learning domain.
+
+**Assessment Guidelines Note:**
+Word count (or equivalent): 6400. This is a reflection of the effort required for the assessment. Word counts will normally include source code, any text, tables, calculations, figures, subtitles and citations. Reference lists and contents of appendices are excluded from the word count. Contents of appendices are not usually considered when determining your final assessment grade.
 
 ## Table of Contents
 
@@ -166,50 +175,370 @@ Non-functional requirements define *how well* the system performs its functions.
 
 ### 5.1 Architecture Diagram
 
-The OLMS employs a **three-tier architecture**:
+The OLMS is designed with a **three-tier architecture**, which promotes modularity, scalability, and separation of concerns. Each tier is responsible for a specific set of functionalities and communicates with the adjacent tiers through well-defined interfaces.
 
-*   **Presentation Layer (Frontend)**: Built with React.js, responsible for the user interface and user interaction. It communicates with the backend via RESTful API calls.
-*   **Application Layer (Backend)**: Developed using Python (Flask), responsible for business logic, data processing, AI functionalities (recommendations, quiz generation), and handling API requests from the frontend.
-*   **Data Layer (Database)**: A relational database (likely SQLite, defined by `schema.sql`) storing all application data, including user information, course details, enrollments, progress, feedback, and messages.
+#### 1. Presentation Layer (Frontend)
+
+*   **Purpose**: This is the user interface (UI) tier, responsible for presenting information to the user and handling user interactions. It runs in the user's web browser.
+*   **Technologies**:
+    *   **React.js**: The primary JavaScript library for building dynamic and interactive user interfaces.
+    *   **JavaScript (with JSX)**: The programming language for frontend logic and UI rendering.
+    *   **CSS**: For styling and visual presentation (e.g., `App.css`, `index.css`, component-specific `.css` files).
+    *   **npm/Yarn**: Package managers for managing frontend dependencies.
+*   **Key Components**:
+    *   **Root Components**: `App.js` (handles routing and overall layout), `index.js` (entry point).
+    *   **UI Components**: Individual React components (`Login.js`, `StudentDashboard.js`, `InstructorDashboard.js`, `AdminApp.js`, `Courses.js`, `Modules.js`, `Chatbot.js`, `Feedback.js`, `Messages.js`, etc.) that encapsulate specific UI elements and their logic.
+    *   **Utility Components**: `alerts.js` for displaying notifications.
+*   **Responsibilities**:
+    *   Rendering the user interface.
+    *   Capturing user input and events.
+    *   Making asynchronous API calls to the backend to fetch and send data.
+    *   Client-side routing and navigation.
+    *   Managing local UI state.
+
+#### 2. Application Layer (Backend)
+
+*   **Purpose**: This is the business logic tier, responsible for processing requests from the frontend, executing business rules, interacting with the database, and handling AI functionalities.
+*   **Technologies**:
+    *   **Python**: The primary programming language for backend development.
+    *   **Flask**: A lightweight Python web framework used to build RESTful APIs.
+    *   **Python Libraries**: Various libraries for database interaction, AI/ML (e.g., for recommendations and quiz generation), authentication, etc. (dependencies listed in `requirements.txt`).
+*   **Key Components**:
+    *   **Main Application**: `app.py` (defines API endpoints, handles request/response cycle, orchestrates calls to other modules).
+    *   **Database Interaction Module**: `database.py` (manages connections to the database and executes SQL queries).
+    *   **AI/ML Modules**: `ai_recommendations.py` (for course recommendations), `quiz_generator.py` (for quiz content generation).
+    *   **Configuration**: `config.py` (application settings), `.env` (environment variables).
+    *   **Test Modules**: `test_backend.py`, `test_ai_system.py`, `test_quiz.py`, etc.
+*   **Responsibilities**:
+    *   Exposing RESTful API endpoints for the frontend.
+    *   Implementing core business logic (e.g., user authentication, course enrollment, progress updates).
+    *   Processing and validating data received from the frontend.
+    *   Interacting with the database to store and retrieve data.
+    *   Executing AI/ML algorithms for recommendations and quiz generation.
+    *   Handling authentication and authorization.
+    *   Error handling and logging.
+
+#### 3. Data Layer (Database)
+
+*   **Purpose**: This tier is responsible for persistent storage and retrieval of all application data.
+*   **Technologies**:
+    *   **MySQL**: The relational database management system used for storing structured data.
+    *   **SQL**: The language used for defining the database schema (`schema.sql`) and for querying/manipulating data.
+*   **Key Components**:
+    *   **Database Schema**: `schema.sql` (defines tables like `admin`, `instructors`, `students`, `courses`, `modules`, `lessons`, `course_enrollments`, `lesson_progress`, `messages`, and their relationships).
+    *   **Database Instance**: The running MySQL server.
+*   **Responsibilities**:
+    *   Storing all application data securely and efficiently.
+    *   Ensuring data integrity through constraints (Primary Keys, Foreign Keys, Unique constraints).
+    *   Providing fast and reliable data access to the Application Layer.
+
+#### Interactions and Data Flow
+
+*   **Frontend to Backend**: The Frontend communicates with the Backend primarily via **RESTful API calls** over HTTP/HTTPS. When a user performs an action (e.g., logs in, enrolls in a course, requests recommendations), the Frontend sends an HTTP request to the appropriate Backend API endpoint.
+*   **Backend to Database**: The Backend interacts with the Database using database connectors and SQL queries (managed by `database.py`). The Backend sends requests to the Database to store new data, retrieve existing data, update records, or delete information.
+*   **Backend to AI/ML Modules**: The `app.py` (or other business logic modules) calls functions within `ai_recommendations.py` and `quiz_generator.py` to leverage AI capabilities. These modules might, in turn, interact with the database to fetch data required for their algorithms.
 
 ```
-+-----------------+       +-----------------+       +-----------------+
-|     Frontend    |       |     Backend     |       |    Database     |
-|   (React.js)    | <---> |    (Python/     | <---> |    (SQL/        |
-|                 |       |     Flask)      |       |    SQLite)      |
-+-----------------+       +-----------------+       +-----------------+
-      User Interface        Business Logic           Data Storage
-      User Interaction      API Endpoints            Schema.sql
-      Component-based       AI Services              database.py
++---------------------+       +---------------------+       +---------------------+
+|  Presentation Layer |       |  Application Layer  |       |     Data Layer      |
+|      (Frontend)     |       |      (Backend)      |       |     (Database)      |
++---------------------+       +---------------------+       +---------------------+
+|                     |       |                     |       |                     |
+|  Web Browser        |       |  Python / Flask     |       |  MySQL Database     |
+|  React.js           | <---> |  RESTful API        | <---> |  SQL Schema         |
+|  HTML, CSS, JS      |       |  Business Logic     |       |  Data Storage       |
+|  UI Components      |       |  AI/ML Modules      |       |  Data Integrity     |
+|                     |       |  (ai_recommendations.py,    |                     |
+|                     |       |   quiz_generator.py) |       |                     |
++---------------------+       +---------------------+       +---------------------+
+        ^                               ^                     
+        |                               |                     
+        | (User Interaction)            | (API Requests/Responses)
+        v                               v                     
+      User                               Database Access (via database.py)
 ```
+
+This architecture provides a clear separation of concerns, allowing different teams to work on different layers concurrently and enabling independent scaling of each tier.
 
 ### 5.2 ER Diagram
 
-(This section would present an Entity-Relationship (ER) Diagram, visually representing the entities (tables) in the database and the relationships between them. Key entities would include:
-*   **Users**: (Students, Instructors, Admins)
-*   **Courses**
-*   **Modules**
-*   **Enrollments** (linking Users and Courses)
-*   **Quizzes**
-*   **Questions**
-*   **Answers**
-*   **Progress** (tracking user completion of modules/quizzes)
-*   **Feedback**
-*   **Messages**
-The diagram would show primary keys, foreign keys, and cardinality of relationships.)
+This section provides a precise textual description of the Entity-Relationship (ER) Diagram for your OLMS database, including both explicitly defined tables from `schema.sql` and inferred tables necessary for the full functionality of the system.
+
+**Entities (Tables) and Key Attributes:**
+
+1.  **`admin`**
+    *   **Purpose**: Stores administrator user accounts.
+    *   **Attributes**: `id` (Primary Key, INT, AUTO_INCREMENT), `username` (VARCHAR, UNIQUE, NOT NULL), `password` (VARCHAR, NOT NULL), `created_at` (TIMESTAMP), `updated_at` (TIMESTAMP).
+
+2.  **`instructors`**
+    *   **Purpose**: Stores instructor user accounts and their personal details.
+    *   **Attributes**: `id` (Primary Key, INT, AUTO_INCREMENT), `username` (VARCHAR, UNIQUE, NOT NULL), `instructor_name` (VARCHAR, NOT NULL), `password` (VARCHAR, NOT NULL), `dob` (DATE, NOT NULL), `gender` (ENUM, NOT NULL), `phone_number` (VARCHAR, NOT NULL), `email` (VARCHAR), `address` (TEXT), `created_at` (TIMESTAMP), `updated_at` (TIMESTAMP).
+
+3.  **`students`**
+    *   **Purpose**: Stores student user accounts and their personal details.
+    *   **Attributes**: `id` (Primary Key, INT, AUTO_INCREMENT), `username` (VARCHAR, UNIQUE, NOT NULL), `student_name` (VARCHAR, NOT NULL), `password` (VARCHAR, NOT NULL), `dob` (DATE, NOT NULL), `gender` (ENUM, NOT NULL), `phone_number` (VARCHAR, NOT NULL), `email` (VARCHAR), `address` (TEXT), `created_at` (TIMESTAMP), `updated_at` (TIMESTAMP).
+
+4.  **`courses`**
+    *   **Purpose**: Stores details about each course offered.
+    *   **Attributes**: `id` (Primary Key, INT, AUTO_INCREMENT), `course_name` (VARCHAR, NOT NULL), `description` (TEXT), `duration` (VARCHAR), `level` (ENUM, DEFAULT 'Beginner'), `status` (ENUM, DEFAULT 'Active'), `created_at` (TIMESTAMP), `updated_at` (TIMESTAMP).
+
+5.  **`modules`**
+    *   **Purpose**: Stores details about modules within a course.
+    *   **Attributes**: `id` (Primary Key, INT, AUTO_INCREMENT), `module_name` (VARCHAR, NOT NULL), `course_id` (Foreign Key to `courses.id`, INT, NOT NULL), `description` (TEXT), `status` (ENUM, DEFAULT 'Active'), `created_at` (TIMESTAMP), `updated_at` (TIMESTAMP).
+
+6.  **`lessons`**
+    *   **Purpose**: Stores details about individual lessons, which are part of modules.
+    *   **Attributes**: `id` (Primary Key, INT, AUTO_INCREMENT), `lesson_name` (VARCHAR, NOT NULL), `module_id` (Foreign Key to `modules.id`, INT, NOT NULL), `file_path` (VARCHAR, NOT NULL), `file_name` (VARCHAR, NOT NULL), `file_type` (VARCHAR, NOT NULL), `file_size` (INT), `description` (TEXT), `total_slides` (INT, DEFAULT 10), `status` (ENUM, DEFAULT 'Active'), `created_at` (TIMESTAMP), `updated_at` (TIMESTAMP).
+
+7.  **`course_enrollments`**
+    *   **Purpose**: Records which students are enrolled in which courses and tracks their overall course progress.
+    *   **Attributes**: `id` (Primary Key, INT, AUTO_INCREMENT), `student_id` (Foreign Key to `students.id`, INT, NOT NULL), `course_id` (Foreign Key to `courses.id`, INT, NOT NULL), `enrollment_date` (TIMESTAMP), `status` (ENUM, DEFAULT 'Active'), `progress_percentage` (DECIMAL, DEFAULT 0.00), `completed_modules` (INT, DEFAULT 0), `total_study_time` (INT, DEFAULT 0), `created_at` (TIMESTAMP), `updated_at` (TIMESTAMP).
+    *   **Unique Constraint**: `unique_enrollment` (`student_id`, `course_id`).
+
+8.  **`lesson_progress`**
+    *   **Purpose**: Tracks a student's detailed progress within specific lessons (e.g., page progress for PDF lessons).
+    *   **Attributes**: `id` (Primary Key, INT, AUTO_INCREMENT), `student_id` (Foreign Key to `students.id`, INT, NOT NULL), `lesson_id` (Foreign Key to `lessons.id`, INT, NOT NULL), `current_page` (INT, DEFAULT 1), `total_pages` (INT, DEFAULT 1), `progress_percentage` (DECIMAL, DEFAULT 0.00), `last_viewed_at` (TIMESTAMP), `created_at` (TIMESTAMP), `updated_at` (TIMESTAMP).
+    *   **Unique Constraint**: `unique_lesson_progress` (`student_id`, `lesson_id`).
+
+9.  **`messages`**
+    *   **Purpose**: Stores in-app messages between different types of users (student-admin, admin-student).
+    *   **Attributes**: `id` (Primary Key, INT, AUTO_INCREMENT), `sender_id` (INT, NOT NULL), `sender_type` (ENUM, NOT NULL), `receiver_id` (INT, NOT NULL), `receiver_type` (ENUM, NOT NULL), `subject` (VARCHAR, NOT NULL), `message` (TEXT, NOT NULL), `message_type` (ENUM, DEFAULT 'general'), `status` (ENUM, DEFAULT 'unread'), `parent_message_id` (Foreign Key to `messages.id`, INT, NULL), `created_at` (TIMESTAMP), `updated_at` (TIMESTAMP).
+
+---
+
+**Inferred Entities (Tables) and Key Attributes (Not present in `schema.sql` but implied by functionality):**
+
+10. **`Quizzes`** (Inferred)
+    *   **Purpose**: Stores details about quizzes.
+    *   **Likely Attributes**: `quiz_id` (Primary Key), `module_id` (Foreign Key to `Modules.id`), `title`, `description`, `max_attempts`, `created_at`, `updated_at`.
+
+11. **`Questions`** (Inferred)
+    *   **Purpose**: Stores individual questions for quizzes.
+    *   **Likely Attributes**: `question_id` (Primary Key), `quiz_id` (Foreign Key to `Quizzes.quiz_id`), `question_text`, `question_type` (e.g., 'multiple_choice', 'true_false'), `created_at`, `updated_at`.
+
+12. **`Answers`** (Inferred)
+    *   **Purpose**: Stores possible answers for questions, and indicates the correct answer.
+    *   **Likely Attributes**: `answer_id` (Primary Key), `question_id` (Foreign Key to `Questions.question_id`), `answer_text`, `is_correct` (boolean), `created_at`, `updated_at`.
+
+13. **`QuizAttempts`** (Inferred)
+    *   **Purpose**: Records each attempt a student makes on a quiz.
+    *   **Likely Attributes**: `attempt_id` (Primary Key), `student_id` (Foreign Key to `Students.id`), `quiz_id` (Foreign Key to `Quizzes.quiz_id`), `score`, `attempt_date`, `duration`, `created_at`, `updated_at`.
+
+14. **`Feedback`** (Inferred)
+    *   **Purpose**: Stores feedback submitted by students.
+    *   **Likely Attributes**: `feedback_id` (Primary Key), `student_id` (Foreign Key to `Students.id`), `course_id` (Foreign Key to `Courses.id`, optional), `instructor_id` (Foreign Key to `Instructors.id`, optional), `rating`, `comments`, `submission_date`, `status` (e.g., 'new', 'reviewed', 'responded'), `created_at`, `updated_at`.
+
+---
+
+**Relationships (Derived from Foreign Keys in `schema.sql` and Inferred Relationships):**
+
+*   **`modules` to `courses`**: One-to-Many (`courses.id` to `modules.course_id`) - A course can have many modules. (`ON DELETE CASCADE`)
+*   **`lessons` to `modules`**: One-to-Many (`modules.id` to `lessons.module_id`) - A module can have many lessons. (`ON DELETE CASCADE`)
+*   **`course_enrollments` to `students`**: Many-to-One (`students.id` to `course_enrollments.student_id`) - Many enrollments belong to one student. (`ON DELETE CASCADE`)
+*   **`course_enrollments` to `courses`**: Many-to-One (`courses.id` to `course_enrollments.course_id`) - Many enrollments belong to one course. (`ON DELETE CASCADE`)
+*   **`lesson_progress` to `students`**: Many-to-One (`students.id` to `lesson_progress.student_id`) - Many lesson progress records belong to one student. (`ON DELETE CASCADE`)
+*   **`lesson_progress` to `lessons`**: Many-to-One (`lessons.id` to `lesson_progress.lesson_id`) - Many lesson progress records belong to one lesson. (`ON DELETE CASCADE`)
+*   **`messages` to `messages` (Self-referencing for replies)**: One-to-Many (`messages.id` to `messages.parent_message_id`) - A message can be a reply to another message. (`ON DELETE SET NULL`)
+
+**Inferred Relationships:**
+
+*   **`Quizzes` to `Modules`**: One-to-Many (`Modules.id` to `Quizzes.module_id`) - A module can have many quizzes.
+*   **`Questions` to `Quizzes`**: One-to-Many (`Quizzes.quiz_id` to `Questions.quiz_id`) - A quiz has many questions.
+*   **`Answers` to `Questions`**: One-to-Many (`Questions.question_id` to `Answers.question_id`) - A question has many answers.
+*   **`QuizAttempts` to `Students`**: Many-to-One (`Students.id` to `QuizAttempts.student_id`) - Many quiz attempts belong to one student.
+*   **`QuizAttempts` to `Quizzes`**: Many-to-One (`Quizzes.quiz_id` to `QuizAttempts.quiz_id`) - Many quiz attempts belong to one quiz.
+*   **`Feedback` to `Students`**: Many-to-One (`Students.id` to `Feedback.student_id`) - Many feedback entries belong to one student.
+*   **`Feedback` to `Courses`**: Many-to-One (`Courses.id` to `Feedback.course_id`) - Many feedback entries can be related to one course.
+*   **`Feedback` to `Instructors`**: Many-to-One (`Instructors.id` to `Feedback.instructor_id`) - Many feedback entries can be related to one instructor.
+
 
 ### 5.3 UML Diagrams
 
-(This section would include various Unified Modeling Language (UML) diagrams to illustrate the system's design and behavior:
-*   **Use Case Diagrams**: To show the interactions between users (actors) and the system, defining the system's boundaries and primary functionalities.
-*   **Class Diagrams**: To illustrate the static structure of the system, showing classes, their attributes, methods, and relationships.
-*   **Sequence Diagrams**: To depict the interactions between objects in a time-ordered sequence, showing how operations are carried out.
-*   **Activity Diagrams**: To model the flow of control from activity to activity, representing the workflow of a system.
-*   **Component Diagrams**: To show the structural relationships between components of the software system.)
+UML diagrams are essential for visualizing, specifying, constructing, and documenting the artifacts of a software system. For the OLMS project, several types of UML diagrams would be highly beneficial:
+
+#### 1. Use Case Diagram
+
+*   **Purpose**: To represent the functional requirements of the system from the user's perspective. It shows the different types of users (actors) and the functions (use cases) they can perform within the system.
+*   **Key Elements**:
+    *   **Actors**: Student, Instructor, Administrator, (potentially) AI System (as an external actor providing services).
+    *   **Use Cases**:
+        *   **Student**: Register, Login, Logout, View Courses, Enroll in Course, View Course Progress, Take Quiz, Submit Feedback, Send Message, Receive Message, Get AI Recommendations, Interact with Chatbot.
+        *   **Instructor**: Register, Login, Logout, View Assigned Courses, View Enrolled Students, View Student Feedback, Respond to Feedback, Send Message, Receive Message, (potentially) Manage Course Content, (potentially) Generate Quiz.
+        *   **Administrator**: Login, Logout, Manage Students, Manage Instructors, Approve Instructors, Manage Courses, Manage System Feedback, Manage Messages, View System Analytics.
+*   **Illustration**: The diagram would show the system boundary (the OLMS), actors outside the boundary, and use cases inside, with lines connecting actors to the use cases they participate in. Relationships like `<<include>>` (for mandatory sub-tasks) and `<<extend>>` (for optional sub-tasks) could also be shown.
+
+#### 2. Class Diagram
+
+*   **Purpose**: To represent the static structure of the system, showing the classes (which map closely to your database tables and key backend objects), their attributes (data members), methods (functions/behaviors), and the relationships between them (association, aggregation, composition, inheritance).
+*   **Key Elements**:
+    *   **Classes**: `Admin`, `Instructor`, `Student`, `Course`, `Module`, `Lesson`, `Enrollment`, `LessonProgress`, `Message`. (Note: While `schema.sql` has separate user tables, a Class Diagram might still show a conceptual `User` class with `Student`, `Instructor`, `Admin` inheriting from it, or simply show the distinct classes as they are in the database).
+    *   **Attributes**: Corresponding to the columns in your database tables (e.g., `Student` class would have `id`, `username`, `student_name`, `email`, etc.).
+    *   **Methods**: Key operations performed by each class (e.g., `Course` class might have `addModule()`, `getEnrollments()`; `Student` class might have `enrollInCourse()`, `submitFeedback()`).
+    *   **Relationships**:
+        *   **Association**: e.g., `Student` "enrolls in" `Course` (represented by `Enrollment` class).
+        *   **Aggregation/Composition**: e.g., `Course` "contains" `Module`, `Module` "contains" `Lesson`.
+*   **Illustration**: Rectangles representing classes, with compartments for attributes and methods. Lines connecting classes to show relationships, with multiplicity indicators (e.g., 1..*, 0..1).
+
+#### 3. Sequence Diagram
+
+*   **Purpose**: To show the interactions between objects in a time-ordered sequence. It depicts the objects involved in a scenario and the messages (method calls or API requests) they exchange to achieve a specific goal.
+*   **Key Scenarios**:
+    *   **User Login**: User (Actor) -> Login UI -> Backend API -> Database -> Backend API -> Login UI -> User.
+    *   **Student Enroll in Course**: Student (Actor) -> Course UI -> Backend API (Enrollment Service) -> Database -> Backend API -> Course UI -> Student.
+    *   **Get AI Recommendations**: Student (Actor) -> AI Recommendations UI -> Backend API -> AI Recommendation Module -> Database (for user history) -> AI Recommendation Module -> Backend API -> AI Recommendations UI -> Student.
+    *   **Submit Feedback**: Student (Actor) -> Feedback UI -> Backend API -> Database -> Backend API -> Feedback UI -> Student.
+*   **Illustration**: Vertical lifelines for each object/participant, horizontal arrows representing messages/method calls, ordered chronologically from top to bottom. Activation bars show when an object is performing an action.
+
+#### 4. Activity Diagram
+
+*   **Purpose**: To model the flow of control from activity to activity, representing the workflow or business process of a system. It's useful for showing the sequence of actions and decisions.
+*   **Key Workflows**:
+    *   **Quiz Taking Process**: Start -> Display Question -> User Answers -> Check Answer -> (Decision: Correct/Incorrect) -> (Loop: More Questions?) -> Calculate Score -> Display Results -> End.
+    *   **Instructor Approves Feedback**: Start -> View Pending Feedback -> (Decision: Respond/Ignore) -> (If Respond: Compose Response -> Send Response) -> Mark as Reviewed -> End.
+    *   **Admin Approves Instructor**: Start -> View Pending Instructors -> Select Instructor -> (Decision: Approve/Reject) -> Update Instructor Status -> Notify Instructor -> End.
+*   **Illustration**: Nodes representing actions/activities, arrows representing transitions, decision points (diamonds), and swimlanes to show which actor or component is responsible for each activity.
+
+#### 5. Component Diagram
+
+*   **Purpose**: To show the high-level structure of the system's components and their dependencies. It illustrates how the software components (e.g., frontend application, backend API, database) are organized and how they interact.
+*   **Key Elements**:
+    *   **Components**: Frontend Application (React.js), Backend API (Flask), Database (MySQL), AI Recommendation Service, Quiz Generation Service.
+    *   **Interfaces**: Provided and required interfaces between components.
+    *   **Dependencies**: Lines showing which components depend on others.
+*   **Illustration**: Rectangles with two smaller rectangles on the side representing components. Lines with arrows showing dependencies. This diagram would visually represent the three-tier architecture described earlier.
+
 
 ### 5.4 Wireframe Diagram
 
-(This section would present wireframe diagrams, which are low-fidelity visual representations of the user interface. They would illustrate the layout and arrangement of content on key screens (e.g., Login, Dashboard, Course Details, Quiz Page) without focusing on visual design elements. Their purpose is to define the structure and functionality of the user interface early in the design process.)
+**Purpose of Wireframes**:
+Wireframes are low-fidelity, black-and-white visual representations of a user interface. Their primary purpose is to define the layout, structure, content, and functionality of a page, without focusing on visual design elements like colors, fonts, or images. They help in planning the user experience (UX) and ensuring that all necessary elements are present and logically arranged.
+
+**Common Elements Across Pages**:
+Most pages would typically include:
+*   **Header**:
+    *   Logo (top-left)
+    *   Site Title (e.g., "OLMS")
+    *   Navigation Links (e.g., Home, Courses, Dashboard, Messages, Profile, Logout)
+    *   User Avatar/Name (top-right, if logged in)
+    *   Search Bar (optional, for courses or content)
+*   **Footer**:
+    *   Copyright information
+    *   Quick links (e.g., About Us, Contact, Privacy Policy)
+*   **Main Content Area**: The primary space for page-specific information and interactions.
+
+---
+
+#### Example Wireframe Descriptions for Key Pages:
+
+**1. Login Page**
+
+*   **Layout**: Centered form on a clean background.
+*   **Elements**:
+    *   Application Logo/Title.
+    *   "Login" heading.
+    *   Username/Email Input Field (text input).
+    *   Password Input Field (password input).
+    *   "Forgot Password?" link.
+    *   "Login" Button.
+    *   "Don't have an account? Register here" link (for students/instructors).
+    *   (Optional) Role selection (Student/Instructor/Admin) if a single login page is used for all roles.
+
+**2. Student Dashboard**
+
+*   **Layout**: Multi-column layout, possibly with a sidebar for navigation.
+*   **Elements**:
+    *   **Header/Navigation**: Standard.
+    *   **Welcome Message**: "Welcome, [Student Name]!"
+    *   **Summary Cards/Widgets**:
+        *   "Courses Enrolled" (count).
+        *   "Modules Completed" (count).
+        *   "Overall Progress" (progress bar).
+        *   "New Messages" (count).
+    *   **"My Enrolled Courses" Section**:
+        *   List of enrolled courses, each with:
+            *   Course Title.
+            *   Instructor Name.
+            *   Current Progress Bar.
+            *   "Continue Learning" / "View Course" Button.
+    *   **"Recommended Courses" Section**:
+        *   List/carousel of AI-recommended courses, each with:
+            *   Course Title.
+            *   Short Description.
+            *   "View Details" / "Enroll" Button.
+    *   **"Upcoming Deadlines" / "Recent Activity" Section**: (Optional)
+    *   **Chatbot Button**: Floating button (bottom-right).
+
+**3. Course Details Page**
+
+*   **Layout**: Two-column layout, with course overview on one side and module list on the other.
+*   **Elements**:
+    *   **Header/Navigation**: Standard.
+    *   **Course Header**:
+        *   Course Title.
+        *   Instructor Name.
+        *   Course Description.
+        *   "Enroll" / "Continue Course" Button (conditional).
+        *   Overall Course Progress Bar (if enrolled).
+    *   **Modules Section**:
+        *   List of Modules, each collapsible:
+            *   Module Title.
+            *   Module Description.
+            *   List of Lessons within the module:
+                *   Lesson Title.
+                *   "View Lesson" / "Download" Icon.
+                *   Lesson Progress (e.g., "Completed", "In Progress").
+            *   (Optional) Quiz for the module.
+    *   **"Submit Feedback" Button**: (Optional, for enrolled students).
+
+**4. Instructor Dashboard**
+
+*   **Layout**: Similar to Student Dashboard, but with instructor-specific widgets.
+*   **Elements**:
+    *   **Header/Navigation**: Standard.
+    *   **Welcome Message**: "Welcome, [Instructor Name]!"
+    *   **Summary Cards/Widgets**:
+        *   "Courses Taught" (count).
+        *   "Total Students" (count).
+        *   "Pending Feedback" (count).
+        *   "New Messages" (count).
+    *   **"My Courses" Section**:
+        *   List of courses taught by the instructor, each with:
+            *   Course Title.
+            *   Number of Enrolled Students.
+            *   "View Students" / "Manage Content" Button.
+    *   **"Recent Student Feedback" Section**:
+        *   List of recent feedback entries, each with:
+            *   Student Name.
+            *   Course Name.
+            *   Feedback Summary.
+            *   "View Details" / "Respond" Button.
+    *   **"Quick Actions"**: (Optional) e.g., "Generate New Quiz", "Send Announcement".
+
+**5. Admin Dashboard**
+
+*   **Layout**: Often a more complex grid or dashboard layout with various management panels.
+*   **Elements**:
+    *   **Header/Navigation**: Standard, with admin-specific links (User Management, Course Management, System Settings, Reports).
+    *   **System Overview Widgets**:
+        *   "Total Users" (Students, Instructors, Admins counts).
+        *   "Active Courses" (count).
+        *   "Pending Instructor Approvals" (count).
+        *   System Health Indicators (optional).
+    *   **"User Management" Panel**:
+        *   Tabs/Links for "Students", "Instructors", "Admins".
+        *   Search/Filter options.
+        *   Table listing users with details (Name, Email, Role, Status).
+        *   "Edit" / "Delete" / "Add New" Buttons.
+    *   **"Pending Instructors" Panel**:
+        *   List of instructors awaiting approval.
+        *   "Approve" / "Reject" Buttons for each.
+    *   **"Course Management" Panel**:
+        *   List of courses.
+        *   "Edit" / "Delete" / "Add New Course" Buttons.
+    *   **"System Messages/Announcements" Panel**:
+        *   List of system messages.
+        *   "Create New Announcement" Button.
+
 
 ## 6.0 Implementation
 
