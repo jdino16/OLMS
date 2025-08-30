@@ -109,7 +109,7 @@ const Instructors = () => {
   if (loading) {
     return (
       <div className="loading-container">
-        <i className="fas fa-spinner fa-spin"></i>
+        <i className="fas fa-spinner"></i>
         <p>Loading instructors...</p>
       </div>
     );
@@ -281,14 +281,14 @@ const Instructors = () => {
           <tbody>
             {instructors.map((instructor) => (
               <tr key={instructor.id}>
-                <td>{instructor.id}</td>
-                <td>{instructor.username}</td>
-                <td>{instructor.instructor_name}</td>
-                <td>{instructor.gender}</td>
-                <td>{instructor.phone_number}</td>
-                <td>{instructor.email || '-'}</td>
-                <td>{formatDate(instructor.created_at)}</td>
-                <td className="actions">
+                <td data-label="ID">{instructor.id}</td>
+                <td data-label="Username">{instructor.username}</td>
+                <td data-label="Name">{instructor.instructor_name}</td>
+                <td data-label="Gender">{instructor.gender}</td>
+                <td data-label="Phone">{instructor.phone_number}</td>
+                <td data-label="Email">{instructor.email || '-'}</td>
+                <td data-label="Created">{formatDate(instructor.created_at)}</td>
+                <td data-label="Actions" className="actions">
                   <button 
                     className="btn btn-sm btn-edit"
                     onClick={() => handleEdit(instructor)}

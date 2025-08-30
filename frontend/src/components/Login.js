@@ -42,8 +42,30 @@ const Login = ({ onLogin }) => {
     }
   };
 
+  // Generate floating particles for background
+  const renderParticles = () => {
+    const particles = [];
+    for (let i = 0; i < 15; i++) {
+      const size = Math.random() * 10 + 5;
+      const style = {
+        width: `${size}px`,
+        height: `${size}px`,
+        top: `${Math.random() * 100}%`,
+        left: `${Math.random() * 100}%`,
+        animationDelay: `${Math.random() * 15}s`,
+        animationDuration: `${15 + Math.random() * 10}s`
+      };
+      particles.push(<div key={i} className="particle" style={style}></div>);
+    }
+    return particles;
+  };
+
   return (
     <div className="admin-login-container">
+      <div className="floating-particles">
+        {renderParticles()}
+      </div>
+      
       <div className="admin-login-card">
         <div className="admin-login-header">
           <div className="logo-container">
@@ -68,6 +90,7 @@ const Login = ({ onLogin }) => {
                 className="form-control"
                 placeholder="Enter username"
                 required
+                autoComplete="username"
               />
               <div className="input-icon">
                 <i className="fas fa-user"></i>
@@ -87,6 +110,7 @@ const Login = ({ onLogin }) => {
                 className="form-control"
                 placeholder="Enter password"
                 required
+                autoComplete="current-password"
               />
               <div className="input-icon">
                 <button
