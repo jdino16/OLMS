@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Admin Dashboard - Full Stack Project
 
 A full-stack web application with React frontend, Python Flask backend, and MySQL database.
@@ -109,3 +110,7 @@ A full-stack web application with React frontend, Python Flask backend, and MySQ
 - **Backend**: Python Flask, Flask-CORS, PyMySQL
 - **Database**: MySQL
 - **Authentication**: Session-based
+=======
+# OLMS
+This project is an Online Learning Management System (OLMS) with a Python (Flask) backend and React.js frontend. It supports user login, course management, progress tracking, feedback, messaging, and AI features like quiz generation and course recommendations.
+>>>>>>> 0b6d0c32662c8c0e67b2f64d7f0304bb350f0e8f
