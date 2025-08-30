@@ -260,6 +260,208 @@ The implementation involves the development of distinct but interconnected compo
     *   `database/schema.sql` defines the database structure.
     *   Scripts like `create_database.py` and `add_sample_*.py` are used to initialize and populate the database for development and testing.
 
+### 6.3.1 Frontend-Backend Connections and Functions for Student Pages
+
+The student-facing pages in the frontend (built with React.js) communicate extensively with the Python/Flask backend to fetch, send, and update data. This interaction primarily occurs via **RESTful API calls** (HTTP requests like GET, POST, PUT, DELETE).
+
+**Key Connections and Data Flow:**
+
+1.  **Authentication (Login/Registration)**:
+    *   **Frontend Components**: `StudentLogin.js`, `StudentRegister.js`.
+    *   **Backend Endpoints (likely in `backend/app.py`)**:
+        *   `POST /api/student/register`: Frontend sends student registration details (username, password, email) to the backend. Backend processes registration, hashes password, stores user in database, and returns a success/failure response.
+        *   `POST /api/student/login`: Frontend sends student credentials. Backend authenticates, generates a session token (e.g., JWT), and sends it back to the frontend.
+    *   **Data Flow**: JSON payload from frontend to backend; JSON response (including token on success) from backend to frontend.
+
+2.  **Dashboard and Course Listing**:
+    *   **Frontend Components**: `StudentDashboard.js`, `Courses.js`.
+    *   **Backend Endpoints**:
+        *   `GET /api/student/dashboard`: Frontend requests dashboard summary data (e.g., enrolled courses, progress overview).
+        *   `GET /api/courses`: Frontend requests a list of all available courses.
+        *   `GET /api/student/enrolled-courses`: Frontend requests courses the student is currently enrolled in.
+    *   **Data Flow**: Frontend sends authenticated requests; Backend queries `database.py` to retrieve course and enrollment data, then sends JSON response.
+
+3.  **Course Content and Progress**:
+    *   **Frontend Components**: `Modules.js`, `CourseProgress.js`.
+    *   **Backend Endpoints**:
+        *   `GET /api/course/<course_id>/modules`: Frontend requests modules for a specific course.
+        *   `GET /api/student/progress/<course_id>`: Frontend requests student's progress for a specific course.
+        *   `PUT /api/student/progress/update`: Frontend sends updates on module completion or quiz attempts.
+    *   **Data Flow**: Frontend sends authenticated requests with `course_id`; Backend retrieves/updates data via `database.py` and sends JSON response.
+
+4.  **AI Recommendations**:
+    *   **Frontend Component**: `AIRecommendations.js`.
+    *   **Backend Endpoint**: `GET /api/student/recommendations`: Frontend requests personalized course recommendations.
+    *   **Data Flow**: Frontend sends authenticated request; Backend calls `ai_recommendations.py` to generate recommendations (which might involve querying user history from the database), then sends JSON response.
+
+5.  **Quiz Functionality**:
+    *   **Frontend Components**: Components within `Modules.js` or dedicated quiz components.
+    *   **Backend Endpoints**:
+        *   `GET /api/quiz/generate/<topic_id>`: Frontend requests a new quiz for a specific topic. Backend calls `quiz_generator.py`.
+        *   `POST /api/quiz/submit`: Frontend sends student's answers to a quiz. Backend processes answers, calculates score, and updates quiz history via `database.py`.
+        *   `GET /api/student/quiz-history`: Frontend requests student's past quiz results.
+    *   **Data Flow**: JSON requests/responses between frontend and backend, involving `quiz_generator.py` and `database.py`.
+
+6.  **Feedback and Messaging**:
+    *   **Frontend Components**: `Feedback.js`, `Messages.js`.
+    *   **Backend Endpoints**:
+        *   `POST /api/feedback`: Frontend sends new feedback.
+        *   `GET /api/student/messages`: Frontend requests student's messages.
+        *   `POST /api/message/send`: Frontend sends a new message.
+    *   **Data Flow**: JSON requests/responses for submitting feedback and managing messages.
+
+**Functions of Student Pages**
+
+The student pages provide a comprehensive set of functionalities designed to support their learning journey:
+
+*   **Account Management**: Register, log in, log out, and manage personal profile information.
+*   **Course Discovery**: Browse and search for available courses.
+*   **Enrollment**: Enroll in desired courses.
+*   **Learning Content Access**: View course modules, lessons, videos, and other learning materials.
+*   **Progress Tracking**: Monitor their progress within enrolled courses, including completed modules and quizzes.
+*   **Quiz Taking**: Attempt quizzes, receive immediate feedback on answers, and review past quiz results.
+*   **Personalized Recommendations**: Receive AI-generated suggestions for courses based on their interests and learning history.
+*   **Communication**: Send and receive in-app messages with instructors or administrators.
+*   **Feedback**: Provide feedback on courses, instructors, or the platform itself.
+*   **Chatbot Interaction**: Get instant assistance and answers to queries via an AI chatbot.
+
+### 6.3.2 Frontend-Backend Connections and Functions for Instructor Pages
+
+The instructor-facing pages in the frontend (built with React.js) communicate with the Python/Flask backend using **RESTful API calls** (HTTP requests like GET, POST, PUT, DELETE) to manage their courses, students, and feedback.
+
+**Key Connections and Data Flow:**
+
+1.  **Authentication (Login/Registration)**:
+    *   **Frontend Components**: `InstructorLogin.js`, `InstructorRegister.js`.
+    *   **Backend Endpoints (likely in `backend/app.py`)**:
+        *   `POST /api/instructor/register`: Frontend sends instructor registration details (e.g., username, password, email, name). Backend processes registration, stores in database, and might set a pending approval status.
+        *   `POST /api/instructor/login`: Frontend sends instructor credentials. Backend authenticates, generates a session token (e.g., JWT), and sends it back to the frontend.
+    *   **Data Flow**: JSON payload from frontend to backend; JSON response (including token on success) from backend to frontend.
+
+2.  **Instructor Dashboard**:
+    *   **Frontend Component**: `InstructorDashboard.js`.
+    *   **Backend Endpoints**:
+        *   `GET /api/instructor/dashboard`: Frontend requests summary data relevant to the instructor (e.g., list of assigned courses, number of enrolled students, pending feedback count).
+        *   `GET /api/instructor/courses`: Frontend requests a detailed list of all courses the instructor is assigned to.
+    *   **Data Flow**: Frontend sends authenticated requests; Backend queries `database.py` to retrieve instructor-specific data and sends JSON response.
+
+3.  **Feedback Management**:
+    *   **Frontend Component**: `InstructorFeedbackDashboard.js`.
+    *   **Backend Endpoints**:
+        *   `GET /api/instructor/feedback`: Frontend requests all feedback submitted by students that is relevant to the instructor's courses.
+        *   `POST /api/feedback/<feedback_id>/respond`: Frontend sends the instructor's response to a specific piece of student feedback.
+        *   `PUT /api/feedback/<feedback_id>/status`: Frontend sends a request to update the status of a feedback item (e.g., mark as "reviewed" or "resolved").
+    *   **Data Flow**: Frontend sends authenticated requests; Backend retrieves/updates feedback data via `database.py` and sends JSON response.
+
+4.  **Messaging**:
+    *   **Frontend Component**: `Messages.js` (this component is likely shared between student and instructor roles, adapting its functionality based on the logged-in user's role).
+    *   **Backend Endpoints**:
+        *   `GET /api/messages`: Frontend requests all messages relevant to the instructor (e.g., messages from students, administrators).
+        *   `POST /api/message/send`: Frontend sends a new message from the instructor to a student or another user.
+    *   **Data Flow**: JSON requests/responses for fetching and sending messages, handled by the backend's messaging logic.
+
+5.  **Course Content Management (Potential)**:
+    *   While not explicitly named in the provided file list for instructors, a common instructor function would be to manage course content. If implemented, this would involve:
+        *   **Frontend Components**: Dedicated components for adding/editing modules, lessons, or quizzes.
+        *   **Backend Endpoints**:
+            *   `POST /api/course/<course_id>/module`: To add a new module to a course.
+            *   `PUT /api/module/<module_id>`: To update an existing module's content.
+            *   `POST /api/quiz/create`: To create a new quiz for a course (potentially leveraging `quiz_generator.py`).
+            *   `PUT /api/quiz/<quiz_id>`: To edit an existing quiz.
+    *   **Data Flow**: Frontend sends authenticated requests with course/module/quiz data; Backend processes and updates the database.
+
+**Functions of Instructor Pages**
+
+The instructor pages provide functionalities tailored to their role in managing courses and interacting with students:
+
+*   **Account Management**: Register, log in, log out, and manage their personal profile information.
+*   **Dashboard Overview**: Access a personalized dashboard displaying key metrics and summaries related to their assigned courses, student enrollments, and pending actions (e.g., new feedback).
+*   **Course Oversight**: View details of the courses they are teaching, including enrolled students.
+*   **Feedback Management**: Review and respond to feedback submitted by students on their courses, and manage the status of these feedback items.
+*   **Communication**: Send and receive in-app messages with their students to provide support, answer questions, or make announcements.
+*   **Content Management (Potential)**: If implemented, instructors would be able to create, edit, and organize course content, modules, and quizzes.
+
+### 6.3.3 Frontend-Backend Connections and Functions for Administrator Pages
+
+The administrator-facing pages in the frontend (built with React.js) communicate with the Python/Flask backend using **RESTful API calls** to perform privileged operations related to system management, user oversight, and content control. Admin connections typically require higher levels of authentication and authorization.
+
+**Key Connections and Data Flow:**
+
+1.  **Authentication (Login)**:
+    *   **Frontend Components**: Likely a shared `Login.js` component, or a specific `AdminLogin.js` if distinct.
+    *   **Backend Endpoints (likely in `backend/app.py`)**:
+        *   `POST /api/admin/login`: Frontend sends admin credentials. Backend authenticates, verifies admin role, generates a session token, and sends it back.
+    *   **Data Flow**: JSON payload from frontend to backend; JSON response (including token on success) from backend to frontend.
+
+2.  **Admin Dashboard**:
+    *   **Frontend Component**: `AdminApp.js`.
+    *   **Backend Endpoints**:
+        *   `GET /api/admin/dashboard-summary`: Frontend requests aggregated data for the admin dashboard (e.g., total users, active courses, pending instructors, system health metrics).
+    *   **Data Flow**: Frontend sends authenticated request; Backend queries various database tables via `database.py` to compile summary data and sends JSON response.
+
+3.  **User Management (Students & Instructors)**:
+    *   **Frontend Components**: `Students.js`, `Instructors.js`.
+    *   **Backend Endpoints**:
+        *   `GET /api/admin/students`: Fetch a list of all student users.
+        *   `POST /api/admin/student`: Create a new student account.
+        *   `PUT /api/admin/student/<student_id>`: Update details of a specific student.
+        *   `DELETE /api/admin/student/<student_id>`: Delete a student account.
+        *   Similar sets of endpoints for instructors: `GET /api/admin/instructors`, `POST /api/admin/instructor`, `PUT /api/admin/instructor/<instructor_id>`, `DELETE /api/admin/instructor/<instructor_id>`.
+    *   **Data Flow**: Frontend sends authenticated requests; Backend performs CRUD operations on user tables via `database.py` and sends JSON responses.
+
+4.  **Instructor Approval**:
+    *   **Frontend Component**: `PendingInstructors.js`.
+    *   **Backend Endpoints**:
+        *   `GET /api/admin/pending-instructors`: Fetch a list of instructor accounts awaiting approval.
+        *   `PUT /api/admin/instructor/<instructor_id>/approve`: Approve a pending instructor.
+        *   `PUT /api/admin/instructor/<instructor_id>/reject`: Reject a pending instructor.
+    *   **Data Flow**: Frontend sends authenticated requests; Backend updates instructor status in the database via `database.py` and sends JSON responses.
+
+5.  **Message Management**:
+    *   **Frontend Component**: `AdminMessages.js`.
+    *   **Backend Endpoints**:
+        *   `GET /api/admin/all-messages`: Fetch all messages across the system (or specific categories).
+        *   `DELETE /api/admin/message/<message_id>`: Delete inappropriate or irrelevant messages.
+        *   `POST /api/admin/announcement`: Send system-wide announcements to all users or specific groups.
+    *   **Data Flow**: Frontend sends authenticated requests; Backend manages message data via `database.py` and sends JSON responses.
+
+6.  **Course Management (Implied)**:
+    *   While specific admin course management components are not explicitly listed, administrators would typically have full control over courses.
+    *   **Backend Endpoints**:
+        *   `POST /api/admin/course`: Add a new course to the system.
+        *   `PUT /api/admin/course/<course_id>`: Update details of an existing course.
+        *   `DELETE /api/admin/course/<course_id>`: Remove a course from the system.
+    *   **Data Flow**: Frontend sends authenticated requests; Backend performs CRUD operations on course tables via `database.py` and sends JSON responses.
+
+**Functions of Administrator Pages**
+
+The administrator pages provide comprehensive control and oversight over the entire OLMS, ensuring its smooth operation and data integrity:
+
+*   **System Oversight**: Access a central dashboard (`AdminApp.js`) to monitor overall system health, user statistics, course activity, and other key performance indicators.
+*   **User Management**: Full control over all student and instructor accounts, including creating new accounts, editing existing user profiles, and deleting accounts.
+*   **Instructor Approval**: Review and manage the approval process for new instructor registrations, ensuring only qualified individuals become instructors.
+*   **Content Management**: Add, edit, and delete courses, modules, and potentially quizzes system-wide, maintaining the curriculum.
+*   **Communication Management**: Oversee and manage system-wide messages and announcements, including the ability to send broadcast messages.
+*   **Feedback Oversight**: View and manage all feedback submitted across the platform, allowing for system-wide improvements.
+*   **System Configuration**: Potentially manage global settings, AI model parameters, or other system-level configurations to fine-tune the platform's behavior.
+
+### 6.3.4 Used Algorithms, Languages, Machine Learning, and Methodology
+
+*   **Used Languages**:
+    *   **Backend**: Python (primary language for server-side logic, API development, and AI/ML components).
+    *   **Frontend**: JavaScript (with React.js for building the user interface).
+    *   **Database**: SQL (for defining the database schema and interacting with the relational database).
+    *   **Styling**: CSS (for visual presentation of the frontend).
+
+*   **Machine Learning (ML) and Algorithms**:
+    *   **AI Recommendations (`ai_recommendations.py`)**: Primarily impacts students by providing personalized course suggestions. Algorithms likely include **Collaborative Filtering** or **Content-Based Filtering**, potentially combined in a **Hybrid Recommendation System**.
+    *   **Quiz Generation (`quiz_generator.py`)**: Utilizes **Natural Language Processing (NLP)** techniques for tasks such as question generation, answer extraction, and text summarization from course content.
+    *   **Methodology**: Involves data collection, model training (if applicable), and inference (generating recommendations or quizzes based on new input).
+
+*   **Overall Development Methodology**:
+    *   An **Iterative and Incremental Development Model** or an **Agile methodology (e.g., Scrum)** would be applied across the entire project development. These methodologies emphasize breaking down the project into smaller, manageable iterations, allowing for continuous feedback, adaptation to changes, and early delivery of working software for all user roles.
+
+
 ## 7.0 Testing and Validation
 
 ### Test Plan
@@ -345,3 +547,796 @@ Throughout the development of this project, several key lessons were learned:
 ## List of Tables
 
 (This section would list all tables included in the report with their respective page numbers.)
+Frontend-Backend Connections for Student Pages
+
+  The student-facing pages in the frontend (built with React.js) communicate extensively with the
+  Python/Flask backend to fetch, send, and update data. This interaction primarily occurs via RESTful API 
+  calls (HTTP requests like GET, POST, PUT, DELETE).
+
+  Key Connections and Data Flow:
+
+   1. Authentication (Login/Registration):
+       * Frontend Components: StudentLogin.js, StudentRegister.js.
+       * Backend Endpoints (likely in `backend/app.py`):
+           * POST /api/student/register: Frontend sends student registration details (username, password,
+             email) to the backend. Backend processes registration, hashes password, stores user in
+             database, and returns a success/failure response.
+           * POST /api/student/login: Frontend sends student credentials. Backend authenticates, generates
+             a session token (e.g., JWT), and sends it back to the frontend.
+       * Data Flow: JSON payload from frontend to backend; JSON response (including token on success) from
+         backend to frontend.
+
+   2. Dashboard and Course Listing:
+       * Frontend Components: StudentDashboard.js, Courses.js.
+       * Backend Endpoints:
+           * GET /api/student/dashboard: Frontend requests dashboard summary data (e.g., enrolled courses,
+             progress overview).
+           * GET /api/courses: Frontend requests a list of all available courses.
+           * GET /api/student/enrolled-courses: Frontend requests courses the student is currently enrolled
+             in.
+       * Data Flow: Frontend sends authenticated requests; Backend queries database.py to retrieve course
+         and enrollment data, then sends JSON response.
+
+   3. Course Content and Progress:
+       * Frontend Components: Modules.js, CourseProgress.js.
+       * Backend Endpoints:
+           * GET /api/course/<course_id>/modules: Frontend requests modules for a specific course.
+           * GET /api/student/progress/<course_id>: Frontend requests student's progress for a specific
+             course.
+           * PUT /api/student/progress/update: Frontend sends updates on module completion or quiz
+             attempts.
+       * Data Flow: Frontend sends authenticated requests with course_id; Backend retrieves/updates data
+         via database.py and sends JSON response.
+
+   4. AI Recommendations:
+       * Frontend Component: AIRecommendations.js.
+       * Backend Endpoint: GET /api/student/recommendations: Frontend requests personalized course
+         recommendations.
+       * Data Flow: Frontend sends authenticated request; Backend calls ai_recommendations.py to generate
+         recommendations (which might involve querying user history from the database), then sends JSON
+         response.
+
+   5. Quiz Functionality:
+       * Frontend Components: Components within Modules.js or dedicated quiz components.
+       * Backend Endpoints:
+           * GET /api/quiz/generate/<topic_id>: Frontend requests a new quiz for a specific topic. Backend
+             calls quiz_generator.py.
+           * POST /api/quiz/submit: Frontend sends student's answers to a quiz. Backend processes answers,
+             calculates score, and updates quiz history via database.py.
+           * GET /api/student/quiz-history: Frontend requests student's past quiz results.
+       * Data Flow: JSON requests/responses between frontend and backend, involving quiz_generator.py and
+         database.py.
+
+   6. Feedback and Messaging:
+       * Frontend Components: Feedback.js, Messages.js.
+       * Backend Endpoints:
+           * POST /api/feedback: Frontend sends new feedback.
+           * GET /api/student/messages: Frontend requests student's messages.
+           * POST /api/message/send: Frontend sends a new message.
+       * Data Flow: JSON requests/responses for submitting feedback and managing messages.
+
+  Functions of Student Pages
+
+  The student pages provide a comprehensive set of functionalities designed to support their learning
+  journey:
+
+   * Account Management: Register, log in, log out, and manage personal profile information.
+   * Course Discovery: Browse and search for available courses.
+   * Enrollment: Enroll in desired courses.
+   * Learning Content Access: View course modules, lessons, videos, and other learning materials.
+   * Progress Tracking: Monitor their progress within enrolled courses, including completed modules and
+     quizzes.
+   * Quiz Taking: Attempt quizzes, receive immediate feedback on answers, and review past quiz results.
+   * Personalized Recommendations: Receive AI-generated suggestions for courses based on their interests
+     and learning history.
+   * Communication: Send and receive in-app messages with instructors or administrators.
+   * Feedback: Provide feedback on courses, instructors, or the platform itself.
+   * Chatbot Interaction: Get instant assistance and answers to queries via an AI chatbot.
+
+  Used Algorithms, Languages, Machine Learning, and Methodology
+
+   * Used Languages:
+       * Backend: Python (primary language for server-side logic, API development, and AI/ML components).
+       * Frontend: JavaScript (with React.js for building the user interface).
+       * Database: SQL (for defining the database schema and interacting with the relational database).
+       * Styling: CSS (for visual presentation of the frontend).
+
+   * Machine Learning (ML) and Algorithms:
+       * AI Recommendations (`ai_recommendations.py`):
+           * Algorithms: Likely employs Collaborative Filtering (recommending items based on similar users'
+             preferences) or Content-Based Filtering (recommending items similar to those the user has liked
+             in the past). More advanced systems might use Hybrid Recommendation Systems combining both.
+
+           * Methodology: Involves data collection (user history, course metadata), model training (if using
+             supervised/unsupervised learning), and inference (generating recommendations based on new user
+             input).
+       * Quiz Generation (`quiz_generator.py`):
+           * Algorithms: Likely utilizes Natural Language Processing (NLP) techniques. This could involve:
+               * Text Summarization: To extract key information from course content.
+               * Question Generation: Using techniques like sequence-to-sequence models or rule-based
+                 systems to create questions from text.
+               * Answer Extraction/Generation: Identifying correct answers and plausible distractors.
+           * Methodology: Involves processing course content, applying NLP models to understand the text,
+             and then generating structured quiz questions and answers.
+
+   * Overall Development Methodology:
+       * Given the project's structure and the iterative nature of software development, an Iterative and 
+         Incremental Development Model or an Agile methodology (e.g., Scrum) would be highly suitable. These
+         methodologies emphasize breaking down the project into smaller, manageable iterations, allowing for
+         continuous feedback, adaptation to changes, and early delivery of working software. This contrasts
+         with a rigid Waterfall model, which is less flexible for complex software projects.
+
+
+         Frontend-Backend Connections for Instructor Pages
+
+  The instructor-facing pages in the frontend (built with React.js) communicate with the Python/Flask
+  backend using RESTful API calls (HTTP requests like GET, POST, PUT, DELETE) to manage their courses,
+  students, and feedback.
+
+  Key Connections and Data Flow:
+
+   1. Authentication (Login/Registration):
+       * Frontend Components: InstructorLogin.js, InstructorRegister.js.
+       * Backend Endpoints (likely in `backend/app.py`):
+           * POST /api/instructor/register: Frontend sends instructor registration details (e.g., username,
+             password, email, name). Backend processes registration, stores in database, and might set a
+             pending approval status.
+           * POST /api/instructor/login: Frontend sends instructor credentials. Backend authenticates,
+             generates a session token (e.g., JWT), and sends it back to the frontend.
+       * Data Flow: JSON payload from frontend to backend; JSON response (including token on success) from
+         backend to frontend.
+
+   2. Instructor Dashboard:
+       * Frontend Component: InstructorDashboard.js.
+       * Backend Endpoints:
+           * GET /api/instructor/dashboard: Frontend requests summary data relevant to the instructor
+             (e.g., list of assigned courses, number of enrolled students, pending feedback count).
+           * GET /api/instructor/courses: Frontend requests a detailed list of all courses the instructor
+             is assigned to.
+       * Data Flow: Frontend sends authenticated requests; Backend queries database.py to retrieve
+         instructor-specific data and sends JSON response.
+
+   3. Feedback Management:
+       * Frontend Component: InstructorFeedbackDashboard.js.
+       * Backend Endpoints:
+           * GET /api/instructor/feedback: Frontend requests all feedback submitted by students that is
+             relevant to the instructor's courses.
+           * POST /api/feedback/<feedback_id>/respond: Frontend sends the instructor's response to a
+             specific piece of student feedback.
+           * PUT /api/feedback/<feedback_id>/status: Frontend sends a request to update the status of a
+             feedback item (e.g., mark as "reviewed" or "resolved").
+       * Data Flow: Frontend sends authenticated requests; Backend retrieves/updates feedback data via
+         database.py and sends JSON response.
+
+   4. Messaging:
+       * Frontend Component: Messages.js (this component is likely shared between student and instructor
+         roles, adapting its functionality based on the logged-in user's role).
+       * Backend Endpoints:
+           * GET /api/messages: Frontend requests all messages relevant to the instructor (e.g., messages
+             from students, administrators).
+           * POST /api/message/send: Frontend sends a new message from the instructor to a student or
+             another user.
+       * Data Flow: JSON requests/responses for fetching and sending messages, handled by the backend's
+         messaging logic.
+
+   5. Course Content Management (Potential):
+       * While not explicitly named in the provided file list for instructors, a common instructor function
+         would be to manage course content. If implemented, this would involve:
+           * Frontend Components: Dedicated components for adding/editing modules, lessons, or quizzes.
+           * Backend Endpoints:
+               * POST /api/course/<course_id>/module: To add a new module to a course.
+               * PUT /api/module/<module_id>: To update an existing module's content.
+               * POST /api/quiz/create: To create a new quiz for a course (potentially leveraging
+                 quiz_generator.py).
+               * PUT /api/quiz/<quiz_id>: To edit an existing quiz.
+       * Data Flow: Frontend sends authenticated requests with course/module/quiz data; Backend processes
+         and updates the database.
+
+  Functions of Instructor Pages
+
+  The instructor pages provide functionalities tailored to their role in managing courses and interacting
+  with students:
+
+   * Account Management: Register, log in, log out, and manage their personal profile information.
+   * Dashboard Overview: Access a personalized dashboard displaying key metrics and summaries related to
+     their assigned courses, student enrollments, and pending actions (e.g., new feedback).
+   * Course Oversight: View details of the courses they are teaching, including enrolled students.
+   * Feedback Management: Review and respond to feedback submitted by students on their courses, and manage
+     the status of these feedback items.
+   * Communication: Send and receive in-app messages with their students to provide support, answer
+     questions, or make announcements.
+   * Content Management (Potential): If implemented, instructors would be able to create, edit, and organize
+     course content, modules, and quizzes.
+
+  Used Algorithms, Languages, Machine Learning, and Methodology
+
+  These aspects are generally consistent across the entire project, applying to both student and instructor
+  functionalities:
+
+   * Used Languages:
+       * Backend: Python (for server-side logic, API development, and AI/ML components).
+       * Frontend: JavaScript (with React.js for building the user interface).
+       * Database: SQL (for defining the database schema and interacting with the relational database).
+       * Styling: CSS (for visual presentation of the frontend).
+
+   * Machine Learning (ML) and Algorithms:
+       * AI Recommendations (`ai_recommendations.py`): Primarily impacts students by providing personalized
+         course suggestions. Instructors might indirectly benefit if recommendations lead to higher
+         enrollment in their courses. The algorithms (e.g., Collaborative Filtering, Content-Based
+         Filtering) and methodology (data collection, model training, inference) remain the same.
+       * Quiz Generation (`quiz_generator.py`): This module is crucial for instructors if they are able to
+         leverage AI to automatically generate quizzes for their courses. The underlying NLP algorithms
+         (e.g., for text summarization, question generation, answer extraction) and methodology (processing
+         course content, applying NLP models) would be used to support this.
+
+   * Overall Development Methodology:
+       * An Iterative and Incremental Development Model or an Agile methodology (e.g., Scrum) would be
+         applied across the entire project development, including features for instructors. This ensures
+         flexibility, continuous feedback integration, and adaptive planning for all user roles.
+
+
+           Frontend-Backend Connections for Administrator Pages
+
+  The administrator-facing pages in the frontend (built with React.js) communicate with the Python/Flask
+  backend using RESTful API calls to perform privileged operations related to system management, user
+  oversight, and content control. Admin connections typically require higher levels of authentication and
+  authorization.
+
+  Key Connections and Data Flow:
+
+   1. Authentication (Login):
+       * Frontend Components: Likely a shared Login.js component, or a specific AdminLogin.js if distinct.
+       * Backend Endpoints (likely in `backend/app.py`):
+           * POST /api/admin/login: Frontend sends admin credentials. Backend authenticates, verifies admin
+             role, generates a session token, and sends it back.
+       * Data Flow: JSON payload from frontend to backend; JSON response (including token on success) from
+         backend to frontend.
+
+   2. Admin Dashboard:
+       * Frontend Component: AdminApp.js.
+       * Backend Endpoints:
+           * GET /api/admin/dashboard-summary: Frontend requests aggregated data for the admin dashboard
+             (e.g., total users, active courses, pending instructors, system health metrics).
+       * Data Flow: Frontend sends authenticated request; Backend queries various database tables via
+         database.py to compile summary data and sends JSON response.
+
+   3. User Management (Students & Instructors):
+       * Frontend Components: Students.js, Instructors.js.
+       * Backend Endpoints:
+           * GET /api/admin/students: Fetch a list of all student users.
+           * POST /api/admin/student: Create a new student account.
+           * PUT /api/admin/student/<student_id>: Update details of a specific student.
+           * DELETE /api/admin/student/<student_id>: Delete a student account.
+           * Similar sets of endpoints for instructors: GET /api/admin/instructors, POST
+             /api/admin/instructor, PUT /api/admin/instructor/<instructor_id>, DELETE
+             /api/admin/instructor/<instructor_id>.
+       * Data Flow: Frontend sends authenticated requests; Backend performs CRUD operations on user tables
+         via database.py and sends JSON responses.
+
+   4. Instructor Approval:
+       * Frontend Component: PendingInstructors.js.
+       * Backend Endpoints:
+           * GET /api/admin/pending-instructors: Fetch a list of instructor accounts awaiting approval.
+           * PUT /api/admin/instructor/<instructor_id>/approve: Approve a pending instructor.
+           * PUT /api/admin/instructor/<instructor_id>/reject: Reject a pending instructor.
+       * Data Flow: Frontend sends authenticated requests; Backend updates instructor status in the
+         database via database.py and sends JSON responses.
+
+   5. Message Management:
+       * Frontend Component: AdminMessages.js.
+       * Backend Endpoints:
+           * GET /api/admin/all-messages: Fetch all messages across the system (or specific categories).
+           * DELETE /api/admin/message/<message_id>: Delete inappropriate or irrelevant messages.
+           * POST /api/admin/announcement: Send system-wide announcements to all users or specific groups.
+       * Data Flow: Frontend sends authenticated requests; Backend manages message data via database.py and
+         sends JSON responses.
+
+   6. Course Management (Implied):
+       * While specific admin course management components are not explicitly listed, administrators would
+         typically have full control over courses.
+       * Backend Endpoints:
+           * POST /api/admin/course: Add a new course to the system.
+           * PUT /api/admin/course/<course_id>: Update details of an existing course.
+           * DELETE /api/admin/course/<course_id>: Remove a course from the system.
+       * Data Flow: Frontend sends authenticated requests; Backend performs CRUD operations on course
+         tables via database.py and sends JSON responses.
+
+  Functions of Administrator Pages
+
+  The administrator pages provide comprehensive control and oversight over the entire OLMS, ensuring its
+  smooth operation and data integrity:
+
+   * System Oversight: Access a central dashboard (AdminApp.js) to monitor overall system health, user
+     statistics, course activity, and other key performance indicators.
+   * User Management: Full control over all student and instructor accounts, including creating new
+     accounts, editing existing user profiles, and deleting accounts.
+   * Instructor Approval: Review and manage the approval process for new instructor registrations, ensuring
+     only qualified individuals become instructors.
+   * Content Management: Add, edit, and delete courses, modules, and potentially quizzes system-wide,
+     maintaining the curriculum.
+   * Communication Management: Oversee and manage system-wide messages and announcements, including the
+     ability to send broadcast messages.
+   * Feedback Oversight: View and manage all feedback submitted across the platform, allowing for
+     system-wide improvements.
+   * System Configuration: Potentially manage global settings, AI model parameters, or other system-level
+     configurations to fine-tune the platform's behavior.
+
+  Used Algorithms, Languages, Machine Learning, and Methodology
+
+  These aspects are consistent across the entire project, applying to all user roles, including
+  administrators:
+
+   * Used Languages:
+       * Backend: Python (for server-side logic, API development, and AI/ML components).
+       * Frontend: JavaScript (with React.js for building the user interface).
+       * Database: SQL (for defining the database schema and interacting with the relational database).
+       * Styling: CSS (for visual presentation of the frontend).
+
+   * Machine Learning (ML) and Algorithms:
+       * AI Recommendations (`ai_recommendations.py`): While primarily student-facing, administrators might
+         have access to dashboards or tools to monitor the performance of the recommendation engine, adjust
+         parameters, or view aggregated recommendation data.
+       * Quiz Generation (`quiz_generator.py`): Administrators would oversee the functionality of the AI quiz        
+          generator, ensuring its accuracy and proper integration into the system. They might manage the
+         resources or configurations related to the NLP models used.
+
+   * Overall Development Methodology:
+       * An Iterative and Incremental Development Model or an Agile methodology (e.g., Scrum) would be
+         applied across the entire project development, including features for administrators. This ensures
+         flexibility, continuous feedback integration, and adaptive planning for all user roles and system
+         functionalities.
+
+
+  Corrected Entity-Relationship Description for OLMS Database (Derived from schema.sql)
+
+  This description outlines the tables, their primary keys, key attributes, and the foreign key
+  relationships as defined in your schema.sql file.
+
+  Entities (Tables) and Key Attributes:
+
+   1. `admin`
+       * Purpose: Stores administrator user accounts.
+       * Attributes: id (Primary Key, INT, AUTO_INCREMENT), `username` (VARCHAR, UNIQUE, NOT NULL),
+         `password` (VARCHAR, NOT NULL), `created_at (TIMESTAMP), updated_at` (TIMESTAMP).
+
+   2. `instructors`
+       * Purpose: Stores instructor user accounts and their personal details.
+       * Attributes: id (Primary Key, INT, AUTO_INCREMENT), `username` (VARCHAR, UNIQUE, NOT NULL),
+         `instructor_name (VARCHAR, NOT NULL), password (VARCHAR, NOT NULL), dob (DATE, NOT NULL), gender
+         (ENUM, NOT NULL), phone_number` (VARCHAR, NOT NULL), `email` (VARCHAR), `address` (TEXT),
+         `created_at (TIMESTAMP), updated_at` (TIMESTAMP).
+
+   3. `students`
+       * Purpose: Stores student user accounts and their personal details.
+       * Attributes: id (Primary Key, INT, AUTO_INCREMENT), `username` (VARCHAR, UNIQUE, NOT NULL),
+         `student_name (VARCHAR, NOT NULL), password (VARCHAR, NOT NULL), dob (DATE, NOT NULL), gender
+         (ENUM, NOT NULL), phone_number` (VARCHAR, NOT NULL), `email` (VARCHAR), `address` (TEXT),
+         `created_at (TIMESTAMP), updated_at` (TIMESTAMP).
+
+   4. `courses`
+       * Purpose: Stores details about each course offered.
+       * Attributes: id (Primary Key, INT, AUTO_INCREMENT), `course_name (VARCHAR, NOT NULL), description
+         (TEXT), duration (VARCHAR), level (ENUM, DEFAULT 'Beginner'), status (ENUM, DEFAULT 'Active'),
+         created_at` (TIMESTAMP), `updated_at` (TIMESTAMP).
+
+   5. `modules`
+       * Purpose: Stores details about modules within a course.
+       * Attributes: id (Primary Key, INT, AUTO_INCREMENT), `module_name (VARCHAR, NOT NULL), course_id`
+         (Foreign Key to `courses.id`, INT, NOT NULL), `description` (TEXT), `status` (ENUM, DEFAULT
+         'Active'), `created_at (TIMESTAMP), updated_at` (TIMESTAMP).
+
+   6. `lessons`
+       * Purpose: Stores details about individual lessons, which are part of modules.
+       * Attributes: id (Primary Key, INT, AUTO_INCREMENT), `lesson_name (VARCHAR, NOT NULL), module_id`
+         (Foreign Key to `modules.id`, INT, NOT NULL), `file_path (VARCHAR, NOT NULL), file_name` (VARCHAR,
+         NOT NULL), `file_type (VARCHAR, NOT NULL), file_size` (INT), `description` (TEXT), `total_slides
+         (INT, DEFAULT 10), status (ENUM, DEFAULT 'Active'), created_at` (TIMESTAMP), `updated_at`
+         (TIMESTAMP).
+
+   7. `course_enrollments`
+       * Purpose: Records which students are enrolled in which courses and tracks their overall course
+         progress.
+       * Attributes: id (Primary Key, INT, AUTO_INCREMENT), `student_id (Foreign Key to students.id, INT,
+         NOT NULL), course_id` (Foreign Key to `courses.id`, INT, NOT NULL), `enrollment_date (TIMESTAMP),
+         status (ENUM, DEFAULT 'Active'), progress_percentage` (DECIMAL, DEFAULT 0.00), `completed_modules
+         (INT, DEFAULT 0), total_study_time (INT, DEFAULT 0), created_at` (TIMESTAMP), `updated_at`
+         (TIMESTAMP).
+       * Unique Constraint: unique_enrollment (student_id, course_id).
+
+   8. `lesson_progress`
+       * Purpose: Tracks a student's detailed progress within specific lessons (e.g., page progress for PDF
+         lessons).
+       * Attributes: id (Primary Key, INT, AUTO_INCREMENT), `student_id (Foreign Key to students.id, INT, NOT        
+          NULL), lesson_id` (Foreign Key to `lessons.id`, INT, NOT NULL), `current_page (INT, DEFAULT 1),
+         total_pages` (INT, DEFAULT 1), `progress_percentage (DECIMAL, DEFAULT 0.00), last_viewed_at
+         (TIMESTAMP), created_at` (TIMESTAMP), `updated_at` (TIMESTAMP).
+       * Unique Constraint: unique_lesson_progress (student_id, lesson_id).
+
+   9. `messages`
+       * Purpose: Stores in-app messages between different types of users (student-admin, admin-student).
+       * Attributes: id (Primary Key, INT, AUTO_INCREMENT), `sender_id (INT, NOT NULL), sender_type` (ENUM,
+         NOT NULL), `receiver_id (INT, NOT NULL), receiver_type` (ENUM, NOT NULL), `subject` (VARCHAR, NOT
+         NULL), `message` (TEXT, NOT NULL), `message_type (ENUM, DEFAULT 'general'), status (ENUM, DEFAULT
+         'unread'), parent_message_id (Foreign Key to messages.id, INT, NULL), created_at` (TIMESTAMP),
+         `updated_at` (TIMESTAMP).
+
+  Relationships (Derived from Foreign Keys in `schema.sql`):
+
+   * `modules` to `courses`: One-to-Many (courses.id to modules.course_id) - A course can have many modules.
+     (ON DELETE CASCADE)
+   * `lessons` to `modules`: One-to-Many (modules.id to lessons.module_id) - A module can have many lessons.
+     (ON DELETE CASCADE)
+   * `course_enrollments` to `students`: Many-to-One (students.id to course_enrollments.student_id) - Many
+     enrollments belong to one student. (ON DELETE CASCADE)
+   * `course_enrollments` to `courses`: Many-to-One (courses.id to course_enrollments.course_id) - Many
+     enrollments belong to one course. (ON DELETE CASCADE)
+   * `lesson_progress` to `students`: Many-to-One (students.id to lesson_progress.student_id) - Many lesson
+     progress records belong to one student. (ON DELETE CASCADE)
+   * `lesson_progress` to `lessons`: Many-to-One (lessons.id to lesson_progress.lesson_id) - Many lesson
+     progress records belong to one lesson. (ON DELETE CASCADE)
+   * `messages` to `messages` (Self-referencing for replies): One-to-Many (messages.id to
+     messages.parent_message_id) - A message can be a reply to another message. (ON DELETE SET NULL)
+
+  Important Note on Missing Tables:
+
+  Based solely on the provided schema.sql, there are no explicit tables defined for Quizzes, Questions, 
+  Answers, Quiz Attempts, or Feedback. This implies that these functionalities, while present in the
+  application's Python code, are either handled without persistent storage in this specific database
+  schema, or their data is managed by an external system or a different database not covered by this
+  schema.sql.
+
+
+
+    Architecture Description for Online Learning Management System (OLMS)
+
+  The OLMS is designed with a three-tier architecture, which promotes modularity, scalability, and
+  separation of concerns. Each tier is responsible for a specific set of functionalities and communicates
+  with the adjacent tiers through well-defined interfaces.
+
+  1. Presentation Layer (Frontend)
+
+   * Purpose: This is the user interface (UI) tier, responsible for presenting information to the user and
+     handling user interactions. It runs in the user's web browser.
+   * Technologies:
+       * React.js: The primary JavaScript library for building dynamic and interactive user interfaces.
+       * JavaScript (with JSX): The programming language for frontend logic and UI rendering.
+       * CSS: For styling and visual presentation (e.g., App.css, index.css, component-specific .css files).
+       * npm/Yarn: Package managers for managing frontend dependencies.
+   * Key Components:
+       * Root Components: App.js (handles routing and overall layout), index.js (entry point).
+       * UI Components: Individual React components (Login.js, StudentDashboard.js, InstructorDashboard.js,
+         AdminApp.js, Courses.js, Modules.js, Chatbot.js, Feedback.js, Messages.js, etc.) that encapsulate
+         specific UI elements and their logic.
+       * Utility Components: alerts.js for displaying notifications.
+   * Responsibilities:
+       * Rendering the user interface.
+       * Capturing user input and events.
+       * Making asynchronous API calls to the backend to fetch and send data.
+       * Client-side routing and navigation.
+       * Managing local UI state.
+
+
+  2. Application Layer (Backend)
+
+   * Purpose: This is the business logic tier, responsible for processing requests from the frontend,
+     executing business rules, interacting with the database, and handling AI functionalities.
+   * Technologies:
+       * Python: The primary programming language for backend development.
+       * Flask: A lightweight Python web framework used to build RESTful APIs.
+       * Python Libraries: Various libraries for database interaction, AI/ML (e.g., for recommendations and
+         quiz generation), authentication, etc. (dependencies listed in requirements.txt).
+   * Key Components:
+       * Main Application: app.py (defines API endpoints, handles request/response cycle, orchestrates calls
+         to other modules).
+       * Database Interaction Module: database.py (manages connections to the database and executes SQL
+         queries).
+       * AI/ML Modules: ai_recommendations.py (for course recommendations), quiz_generator.py (for quiz
+         content generation).
+       * Configuration: config.py (application settings), .env (environment variables).
+       * Test Modules: test_backend.py, test_ai_system.py, test_quiz.py, etc.
+   * Responsibilities:
+       * Exposing RESTful API endpoints for the frontend.
+       * Implementing core business logic (e.g., user authentication, course enrollment, progress updates).
+       * Processing and validating data received from the frontend.
+       * Interacting with the database to store and retrieve data.
+       * Executing AI/ML algorithms for recommendations and quiz generation.
+       * Handling authentication and authorization.
+       * Error handling and logging.
+
+  3. Data Layer (Database)
+
+   * Purpose: This tier is responsible for persistent storage and retrieval of all application data.
+   * Technologies:
+       * MySQL: The relational database management system used for storing structured data.
+       * SQL: The language used for defining the database schema (schema.sql) and for querying/manipulating
+         data.
+   * Key Components:
+       * Database Schema: schema.sql (defines tables like admin, instructors, students, courses, modules,
+         lessons, course_enrollments, lesson_progress, messages, and their relationships).
+       * Database Instance: The running MySQL server.
+   * Responsibilities:
+       * Storing all application data securely and efficiently.
+       * Ensuring data integrity through constraints (Primary Keys, Foreign Keys, Unique constraints).
+       * Providing fast and reliable data access to the Application Layer.
+
+  Interactions and Data Flow
+
+   * Frontend to Backend: The Frontend communicates with the Backend primarily via RESTful API calls over
+     HTTP/HTTPS. When a user performs an action (e.g., logs in, enrolls in a course, requests
+     recommendations), the Frontend sends an HTTP request to the appropriate Backend API endpoint.
+   * Backend to Database: The Backend interacts with the Database using database connectors and SQL queries
+     (managed by database.py). The Backend sends requests to the Database to store new data, retrieve
+     existing data, update records, or delete information.
+   * Backend to AI/ML Modules: The app.py (or other business logic modules) calls functions within
+     ai_recommendations.py and quiz_generator.py to leverage AI capabilities. These modules might, in turn,
+     interact with the database to fetch data required for their algorithms.
+
+    1 +---------------------+       +---------------------+       +---------------------+
+    2 |  Presentation Layer |       |  Application Layer  |       |     Data Layer      |
+    3 |      (Frontend)     |       |      (Backend)      |       |     (Database)      |
+    4 +---------------------+       +---------------------+       +---------------------+
+    5 |                     |       |                     |       |                     |
+    6 |  Web Browser        |       |  Python / Flask     |       |  MySQL Database     |
+    7 |  React.js           | <---> |  RESTful API        | <---> |  SQL Schema         |
+    8 |  HTML, CSS, JS      |       |  Business Logic     |       |  Data Storage       |
+    9 |  UI Components      |       |  AI/ML Modules      |       |  Data Integrity     |
+   10 |                     |       |  (ai_recommendations.py,    |                     |
+   11 |                     |       |   quiz_generator.py) |       |                     |
+   12 +---------------------+       +---------------------+       +---------------------+
+   13         ^                               ^
+   14         |                               |
+   15         | (User Interaction)            | (API Requests/Responses)
+   16         v                               v
+   17       User                               Database Access (via database.py)
+
+  This architecture provides a clear separation of concerns, allowing different teams to work on
+  different layers concurrently and enabling independent scaling of each tier.
+
+
+  ✦ I understand you'd like UML Diagrams. As I've mentioned before, I cannot generate visual diagrams.
+  However, I can provide a detailed textual description of the most relevant UML (Unified Modeling
+  Language) diagrams for your OLMS project, explaining what each type of diagram would illustrate in the
+  context of your system.
+
+  You can use these descriptions to create the actual visual UML diagrams using a dedicated diagramming
+  tool.
+
+  ---
+
+  UML Diagrams for Online Learning Management System (OLMS)
+
+  UML diagrams are essential for visualizing, specifying, constructing, and documenting the artifacts of
+  a software system. For the OLMS project, several types of UML diagrams would be highly beneficial:
+
+  1. Use Case Diagram
+
+   * Purpose: To represent the functional requirements of the system from the user's perspective. It shows
+     the different types of users (actors) and the functions (use cases) they can perform within the system.
+   * Key Elements:
+       * Actors: Student, Instructor, Administrator, (potentially) AI System (as an external actor providing
+         services).
+       * Use Cases:
+           * Student: Register, Login, Logout, View Courses, Enroll in Course, View Course Progress, Take
+             Quiz, Submit Feedback, Send Message, Receive Message, Get AI Recommendations, Interact with
+             Chatbot.
+           * Instructor: Register, Login, Logout, View Assigned Courses, View Enrolled Students, View
+             Student Feedback, Respond to Feedback, Send Message, Receive Message, (potentially) Manage
+             Course Content, (potentially) Generate Quiz.
+           * Administrator: Login, Logout, Manage Students, Manage Instructors, Approve Instructors, Manage
+             Courses, Manage System Feedback, Manage Messages, View System Analytics.
+   * Illustration: The diagram would show the system boundary (the OLMS), actors outside the boundary, and
+     use cases inside, with lines connecting actors to the use cases they participate in. Relationships like
+     <<include>> (for mandatory sub-tasks) and <<extend>> (for optional sub-tasks) could also be shown.
+
+  2. Class Diagram
+
+
+
+   * Purpose: To represent the static structure of the system, showing the classes (which map closely to
+     your database tables and key backend objects), their attributes (data members), methods
+     (functions/behaviors), and the relationships between them (association, aggregation, composition,
+     inheritance).
+   * Key Elements:
+       * Classes: Admin, Instructor, Student, Course, Module, Lesson, Enrollment, LessonProgress, Message.
+         (Note: While schema.sql has separate user tables, a Class Diagram might still show a conceptual
+         User class with Student, Instructor, Admin inheriting from it, or simply show the distinct classes
+         as they are in the database).
+       * Attributes: Corresponding to the columns in your database tables (e.g., Student class would have
+         id, username, student_name, email, etc.).
+       * Methods: Key operations performed by each class (e.g., Course class might have addModule(),
+         getEnrollments(); Student class might have enrollInCourse(), submitFeedback()).
+       * Relationships:
+           * Association: e.g., Student "enrolls in" Course (represented by Enrollment class).
+           * Aggregation/Composition: e.g., Course "contains" Module, Module "contains" Lesson.
+   * Illustration: Rectangles representing classes, with compartments for attributes and methods. Lines
+     connecting classes to show relationships, with multiplicity indicators (e.g., 1..*, 0..1).
+
+  3. Sequence Diagram
+
+   * Purpose: To show the interactions between objects in a time-ordered sequence. It depicts the objects
+     involved in a scenario and the messages (method calls or API requests) they exchange to achieve a
+     specific goal.
+   * Key Scenarios:
+       * User Login: User (Actor) -> Login UI -> Backend API -> Database -> Backend API -> Login UI -> User.
+       * Student Enroll in Course: Student (Actor) -> Course UI -> Backend API (Enrollment Service) ->
+         Database -> Backend API -> Course UI -> Student.
+       * Get AI Recommendations: Student (Actor) -> AI Recommendations UI -> Backend API -> AI
+         Recommendation Module -> Database (for user history) -> AI Recommendation Module -> Backend API ->
+         AI Recommendations UI -> Student.
+       * Submit Feedback: Student (Actor) -> Feedback UI -> Backend API -> Database -> Backend API ->
+         Feedback UI -> Student.
+   * Illustration: Vertical lifelines for each object/participant, horizontal arrows representing
+     messages/method calls, ordered chronologically from top to bottom. Activation bars show when an object
+     is performing an action.
+
+  4. Activity Diagram
+
+
+   * Purpose: To model the flow of control from activity to activity, representing the workflow or business
+     process of a system. It's useful for showing the sequence of actions and decisions.
+   * Key Workflows:
+       * Quiz Taking Process: Start -> Display Question -> User Answers -> Check Answer -> (Decision:
+         Correct/Incorrect) -> (Loop: More Questions?) -> Calculate Score -> Display Results -> End.
+       * Instructor Approves Feedback: Start -> View Pending Feedback -> (Decision: Respond/Ignore) -> (If
+         Respond: Compose Response -> Send Response) -> Mark as Reviewed -> End.
+       * Admin Approves Instructor: Start -> View Pending Instructors -> Select Instructor -> (Decision:
+         Approve/Reject) -> Update Instructor Status -> Notify Instructor -> End.
+   * Illustration: Nodes representing actions/activities, arrows representing transitions, decision points
+     (diamonds), and swimlanes to show which actor or component is responsible for each activity.
+
+  5. Component Diagram
+
+   * Purpose: To show the high-level structure of the system's components and their dependencies. It
+     illustrates how the software components (e.g., frontend application, backend API, database) are
+     organized and how they interact.
+   * Key Elements:
+       * Components: Frontend Application (React.js), Backend API (Flask), Database (MySQL), AI
+         Recommendation Service, Quiz Generation Service.
+       * Interfaces: Provided and required interfaces between components.
+       * Dependencies: Lines showing which components depend on others.
+   * Illustration: Rectangles with two smaller rectangles on the side representing components. Lines with
+     arrows showing dependencies. This diagram would visually represent the three-tier architecture
+     described earlier.
+
+  ---
+
+  These descriptions should provide a solid foundation for creating your visual UML diagrams.
+
+
+
+    Wireframe Diagram Description for Online Learning Management System (OLMS)
+
+  Purpose of Wireframes:
+  Wireframes are low-fidelity, black-and-white visual representations of a user interface. Their primary
+  purpose is to define the layout, structure, content, and functionality of a page, without focusing on
+  visual design elements like colors, fonts, or images. They help in planning the user experience (UX) and
+  ensuring that all necessary elements are present and logically arranged.
+
+  Common Elements Across Pages:
+  Most pages would typically include:
+   * Header:
+       * Logo (top-left)
+       * Site Title (e.g., "OLMS")
+       * Navigation Links (e.g., Home, Courses, Dashboard, Messages, Profile, Logout)
+       * User Avatar/Name (top-right, if logged in)
+       * Search Bar (optional, for courses or content)
+   * Footer:
+       * Copyright information
+       * Quick links (e.g., About Us, Contact, Privacy Policy)
+   * Main Content Area: The primary space for page-specific information and interactions.
+
+  ---
+
+  Example Wireframe Descriptions for Key Pages:
+
+  1. Login Page
+
+   * Layout: Centered form on a clean background.
+   * Elements:
+       * Application Logo/Title.
+       * "Login" heading.
+       * Username/Email Input Field (text input).
+       * Password Input Field (password input).
+       * "Forgot Password?" link.
+       * "Login" Button.
+       * "Don't have an account? Register here" link (for students/instructors).
+       * (Optional) Role selection (Student/Instructor/Admin) if a single login page is used for all roles.
+
+  2. Student Dashboard
+
+   * Layout: Multi-column layout, possibly with a sidebar for navigation.
+   * Elements:
+       * Header/Navigation: Standard.
+       * Welcome Message: "Welcome, [Student Name]!"
+       * Summary Cards/Widgets:
+           * "Courses Enrolled" (count).
+           * "Modules Completed" (count).
+           * "Overall Progress" (progress bar).
+           * "New Messages" (count).
+       * "My Enrolled Courses" Section:
+           * List of enrolled courses, each with:
+               * Course Title.
+               * Instructor Name.
+               * Current Progress Bar.
+               * "Continue Learning" / "View Course" Button.
+       * "Recommended Courses" Section:
+           * List/carousel of AI-recommended courses, each with:
+               * Course Title.
+               * Short Description.
+               * "View Details" / "Enroll" Button.
+       * "Upcoming Deadlines" / "Recent Activity" Section: (Optional)
+       * Chatbot Button: Floating button (bottom-right).
+
+  3. Course Details Page
+
+   * Layout: Two-column layout, with course overview on one side and module list on the other.
+   * Elements:
+       * Header/Navigation: Standard.
+       * Course Header:
+           * Course Title.
+           * Instructor Name.
+           * Course Description.
+           * "Enroll" / "Continue Course" Button (conditional).
+           * Overall Course Progress Bar (if enrolled).
+       * Modules Section:
+           * List of Modules, each collapsible:
+               * Module Title.
+               * Module Description.
+               * List of Lessons within the module:
+                   * Lesson Title.
+                   * "View Lesson" / "Download" Icon.
+                   * Lesson Progress (e.g., "Completed", "In Progress").
+               * (Optional) Quiz for the module.
+       * "Submit Feedback" Button: (Optional, for enrolled students).
+
+  4. Instructor Dashboard
+
+   * Layout: Similar to Student Dashboard, but with instructor-specific widgets.
+   * Elements:
+       * Header/Navigation: Standard.
+       * Welcome Message: "Welcome, [Instructor Name]!"
+       * Summary Cards/Widgets:
+           * "Courses Taught" (count).
+           * "Total Students" (count).
+           * "Pending Feedback" (count).
+           * "New Messages" (count).
+       * "My Courses" Section:
+           * List of courses taught by the instructor, each with:
+               * Course Title.
+               * Number of Enrolled Students.
+               * "View Students" / "Manage Content" Button.
+       * "Recent Student Feedback" Section:
+           * List of recent feedback entries, each with:
+               * Student Name.
+               * Course Name.
+               * Feedback Summary.
+               * "View Details" / "Respond" Button.
+       * "Quick Actions": (Optional) e.g., "Generate New Quiz", "Send Announcement".
+
+  5. Admin Dashboard
+
+   * Layout: Often a more complex grid or dashboard layout with various management panels.
+   * Elements:
+       * Header/Navigation: Standard, with admin-specific links (User Management, Course Management, System
+         Settings, Reports).
+       * System Overview Widgets:
+           * "Total Users" (Students, Instructors, Admins counts).
+           * "Active Courses" (count).
+           * "Pending Instructor Approvals" (count).
+           * System Health Indicators (optional).
+       * "User Management" Panel:
+           * Tabs/Links for "Students", "Instructors", "Admins".
+           * Search/Filter options.
+           * Table listing users with details (Name, Email, Role, Status).
+           * "Edit" / "Delete" / "Add New" Buttons.
+       * "Pending Instructors" Panel:
+           * List of instructors awaiting approval.
+           * "Approve" / "Reject" Buttons for each.
+       * "Course Management" Panel:
+           * List of courses.
+           * "Edit" / "Delete" / "Add New Course" Buttons.
+       * "System Messages/Announcements" Panel:
+           * List of system messages.
+           * "Create New Announcement" Button.
+
+  ---
