@@ -10,6 +10,12 @@
   justify-content: center;
   z-index: 1000;
   padding: 20px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.feedback-container.closing {
+  opacity: 0;
 }
 
 .feedback-container > div {
@@ -23,6 +29,10 @@
   animation: slideIn 0.3s ease-out;
 }
 
+.feedback-container.closing > div {
+  animation: slideOut 0.3s ease-in;
+}
+
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -31,6 +41,17 @@
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
   }
 }
 
@@ -54,6 +75,11 @@
 
 .feedback-header h3 i {
   color: #667eea;
+  transition: transform 0.3s ease;
+}
+
+.feedback-header h3:hover i {
+  transform: rotate(15deg);
 }
 
 .close-btn {
@@ -75,6 +101,7 @@
 .close-btn:hover {
   background: #f8f9fa;
   color: #2c3e50;
+  transform: rotate(90deg);
 }
 
 .feedback-content {
@@ -88,11 +115,40 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 10px;
   color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.target-info::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0)
+  );
+  transform: rotate(30deg);
+  animation: shimmer 3s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(30deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(30deg);
+  }
 }
 
 .target-info h4 {
   margin: 0 0 5px 0;
   font-size: 18px;
+  position: relative;
+  z-index: 1;
 }
 
 .target-type {
@@ -100,6 +156,8 @@
   opacity: 0.9;
   text-transform: uppercase;
   letter-spacing: 1px;
+  position: relative;
+  z-index: 1;
 }
 
 .error-message {
@@ -112,6 +170,13 @@
   align-items: center;
   gap: 10px;
   border: 1px solid #f5c6cb;
+  animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
 
 .error-message i {
@@ -152,6 +217,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .star:hover {
@@ -172,6 +238,7 @@
   font-size: 14px;
   color: #6c757d;
   font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 /* Form Controls */
@@ -200,6 +267,7 @@ textarea {
   resize: vertical;
   min-height: 100px;
   font-family: inherit;
+  transition: all 0.3s ease;
 }
 
 /* Buttons */
@@ -224,6 +292,37 @@ textarea {
   font-size: 14px;
   min-width: 120px;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.btn:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(20, 20);
+    opacity: 0;
+  }
 }
 
 .btn:disabled {
@@ -239,6 +338,7 @@ textarea {
 .btn-primary:hover:not(:disabled) {
   background: #5a6fd8;
   transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
 .btn-secondary {
@@ -249,6 +349,7 @@ textarea {
 .btn-secondary:hover:not(:disabled) {
   background: #5a6268;
   transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
 }
 
 .btn-danger {
@@ -259,6 +360,7 @@ textarea {
 .btn-danger:hover:not(:disabled) {
   background: #c82333;
   transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
 }
 
 /* Success State */
@@ -290,12 +392,25 @@ textarea {
   margin: 0 0 10px 0;
   font-size: 24px;
   color: #2c3e50;
+  animation: fadeIn 0.5s ease;
 }
 
 .feedback-success p {
   margin: 0 0 25px 0;
   color: #6c757d;
   font-size: 16px;
+  animation: fadeIn 0.5s ease 0.2s both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .feedback-summary {
@@ -304,6 +419,7 @@ textarea {
   padding: 20px;
   margin-bottom: 25px;
   text-align: left;
+  animation: fadeIn 0.5s ease 0.4s both;
 }
 
 .summary-item {
@@ -334,6 +450,16 @@ textarea {
 
 .stars-display i.filled {
   color: #ffd700;
+}
+
+.stars-display i.pulse {
+  animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 
 .rating-description {

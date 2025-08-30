@@ -4,12 +4,14 @@ import './Feedback.css';
 
 const Feedback = ({ student, targetType, targetId, targetName, onClose }) => {
   const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState('');
   const [category, setCategory] = useState('general');
   const [existingFeedback, setExistingFeedback] = useState(null);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
+  const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
     if (student && targetType && targetId) {
@@ -29,6 +31,13 @@ const Feedback = ({ student, targetType, targetId, targetName, onClose }) => {
     } catch (error) {
       console.error('Error fetching existing feedback:', error);
     }
+  };
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 300);
   };
 
   const handleSubmit = async (e) => {
@@ -134,15 +143,17 @@ const Feedback = ({ student, targetType, targetId, targetName, onClose }) => {
           <button
             key={star}
             type="button"
-            className={`star ${star <= rating ? 'filled' : ''}`}
+            className={`star ${star <= (hoverRating || rating) ? 'filled' : ''}`}
             onClick={() => setRating(star)}
+            onMouseEnter={() => setHoverRating(star)}
+            onMouseLeave={() => setHoverRating(0)}
             disabled={loading}
           >
             <i className="fas fa-star"></i>
           </button>
         ))}
         <span className="rating-text">
-          {rating > 0 ? `${rating} star${rating > 1 ? 's' : ''}` : 'Select rating'}
+          {rating > 0 ? `${rating} star${rating > 1 ? 's' : ''} - ${getRatingDescription(rating)}` : 'Select rating'}
         </span>
       </div>
     );
@@ -161,7 +172,7 @@ const Feedback = ({ student, targetType, targetId, targetName, onClose }) => {
 
   if (submitted) {
     return (
-      <div className="feedback-container">
+      <div className={`feedback-container ${isClosing ? 'closing' : ''}`}>
         <div className="feedback-success">
           <div className="success-icon">
             <i className="fas fa-check-circle"></i>
@@ -175,7 +186,8 @@ const Feedback = ({ student, targetType, targetId, targetName, onClose }) => {
                 {[1, 2, 3, 4, 5].map((star) => (
                   <i 
                     key={star} 
-                    className={`fas fa-star ${star <= rating ? 'filled' : ''}`}
+                    className={`fas fa-star ${star <= rating ? 'filled pulse' : ''}`}
+                    style={{ animationDelay: `${star * 0.1}s` }}
                   ></i>
                 ))}
                 <span className="rating-description">({getRatingDescription(rating)})</span>
@@ -198,7 +210,7 @@ const Feedback = ({ student, targetType, targetId, targetName, onClose }) => {
             </button>
             <button 
               className="btn btn-primary"
-              onClick={onClose}
+              onClick={handleClose}
             >
               <i className="fas fa-check"></i>
               Close
@@ -210,108 +222,110 @@ const Feedback = ({ student, targetType, targetId, targetName, onClose }) => {
   }
 
   return (
-    <div className="feedback-container">
-      <div className="feedback-header">
-        <h3>
-          <i className="fas fa-comment-alt"></i>
-          {existingFeedback ? 'Update Feedback' : 'Submit Feedback'}
-        </h3>
-        <button className="close-btn" onClick={onClose}>
-          <i className="fas fa-times"></i>
-        </button>
-      </div>
-
-      <div className="feedback-content">
-        <div className="target-info">
-          <h4>{targetName}</h4>
-          <span className="target-type">{targetType === 'course' ? 'Course' : 'Lesson'}</span>
+    <div className={`feedback-container ${isClosing ? 'closing' : ''}`}>
+      <div>
+        <div className="feedback-header">
+          <h3>
+            <i className="fas fa-comment-alt"></i>
+            {existingFeedback ? 'Update Feedback' : 'Submit Feedback'}
+          </h3>
+          <button className="close-btn" onClick={handleClose}>
+            <i className="fas fa-times"></i>
+          </button>
         </div>
 
-        {error && (
-          <div className="error-message">
-            <i className="fas fa-exclamation-triangle"></i>
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Rating *</label>
-            {renderStars()}
+        <div className="feedback-content">
+          <div className="target-info">
+            <h4>{targetName}</h4>
+            <span className="target-type">{targetType === 'course' ? 'Course' : 'Lesson'}</span>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="category">Category</label>
-            <select
-              id="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              disabled={loading}
-            >
-              <option value="general">General</option>
-              <option value="content">Content Quality</option>
-              <option value="difficulty">Difficulty Level</option>
-              <option value="instructor">Instructor</option>
-              <option value="technical">Technical Issues</option>
-            </select>
-          </div>
+          {error && (
+            <div className="error-message">
+              <i className="fas fa-exclamation-triangle"></i>
+              {error}
+            </div>
+          )}
 
-          <div className="form-group">
-            <label htmlFor="comment">Comment (Optional)</label>
-            <textarea
-              id="comment"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Share your thoughts about this course/lesson..."
-              rows="4"
-              disabled={loading}
-            />
-          </div>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Rating *</label>
+              {renderStars()}
+            </div>
 
-          <div className="feedback-actions">
-            {existingFeedback && (
+            <div className="form-group">
+              <label htmlFor="category">Category</label>
+              <select
+                id="category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                disabled={loading}
+              >
+                <option value="general">General</option>
+                <option value="content">Content Quality</option>
+                <option value="difficulty">Difficulty Level</option>
+                <option value="instructor">Instructor</option>
+                <option value="technical">Technical Issues</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="comment">Comment (Optional)</label>
+              <textarea
+                id="comment"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Share your thoughts about this course/lesson..."
+                rows="4"
+                disabled={loading}
+              />
+            </div>
+
+            <div className="feedback-actions">
+              {existingFeedback && (
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={handleDelete}
+                  disabled={loading}
+                >
+                  <i className="fas fa-trash"></i>
+                  Delete
+                </button>
+              )}
+              
+              {existingFeedback ? (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleUpdate}
+                  disabled={loading}
+                >
+                  <i className="fas fa-save"></i>
+                  {loading ? 'Updating...' : 'Update Feedback'}
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={loading}
+                >
+                  <i className="fas fa-paper-plane"></i>
+                  {loading ? 'Submitting...' : 'Submit Feedback'}
+                </button>
+              )}
+              
               <button
                 type="button"
-                className="btn btn-danger"
-                onClick={handleDelete}
+                className="btn btn-secondary"
+                onClick={handleClose}
                 disabled={loading}
               >
-                <i className="fas fa-trash"></i>
-                Delete
+                Cancel
               </button>
-            )}
-            
-            {existingFeedback ? (
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={handleUpdate}
-                disabled={loading}
-              >
-                <i className="fas fa-save"></i>
-                {loading ? 'Updating...' : 'Update Feedback'}
-              </button>
-            ) : (
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={loading}
-              >
-                <i className="fas fa-paper-plane"></i>
-                {loading ? 'Submitting...' : 'Submit Feedback'}
-              </button>
-            )}
-            
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onClose}
-              disabled={loading}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
