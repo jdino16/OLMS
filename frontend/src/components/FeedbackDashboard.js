@@ -108,21 +108,10 @@ const FeedbackDashboard = ({ student }) => {
     return (
       <div className="feedback-dashboard">
         <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Loading feedback analytics...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="feedback-dashboard">
-        <div className="loading-container">
           <div className="loading-spinner">
             <i className="fas fa-spinner fa-spin"></i>
-            <p>Loading feedback analytics...</p>
           </div>
+          <p>Loading feedback analytics...</p>
         </div>
       </div>
     );

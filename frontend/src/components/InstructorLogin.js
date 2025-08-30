@@ -8,8 +8,11 @@ const InstructorLogin = ({ onLogin, onShowRegister }) => {
     password: ''
   });
   const [loading, setLoading] = useState(false);
-
   const [showPassword, setShowPassword] = useState(false);
+  const [fieldFocus, setFieldFocus] = useState({
+    username: false,
+    password: false
+  });
 
   const handleChange = (e) => {
     setCredentials({
@@ -20,6 +23,20 @@ const InstructorLogin = ({ onLogin, onShowRegister }) => {
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleFocus = (field) => {
+    setFieldFocus({
+      ...fieldFocus,
+      [field]: true
+    });
+  };
+
+  const handleBlur = (field) => {
+    setFieldFocus({
+      ...fieldFocus,
+      [field]: false
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -58,11 +75,13 @@ const InstructorLogin = ({ onLogin, onShowRegister }) => {
                 name="username"
                 value={credentials.username}
                 onChange={handleChange}
+                onFocus={() => handleFocus('username')}
+                onBlur={() => handleBlur('username')}
                 className="form-control"
                 placeholder="Enter username"
                 required
               />
-              <div className="input-icon">
+              <div className={`input-icon ${fieldFocus.username ? 'focused' : ''}`}>
                 <i className="fas fa-user"></i>
               </div>
             </div>
@@ -77,11 +96,13 @@ const InstructorLogin = ({ onLogin, onShowRegister }) => {
                 name="password"
                 value={credentials.password}
                 onChange={handleChange}
+                onFocus={() => handleFocus('password')}
+                onBlur={() => handleBlur('password')}
                 className="form-control"
                 placeholder="Enter password"
                 required
               />
-              <div className="input-icon">
+              <div className={`input-icon ${fieldFocus.password ? 'focused' : ''}`}>
                 <button
                   type="button"
                   className="password-toggle"
@@ -93,8 +114,6 @@ const InstructorLogin = ({ onLogin, onShowRegister }) => {
               </div>
             </div>
           </div>
-          
-
           
           <button
             type="submit"
