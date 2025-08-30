@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './StudentLogin.css';
 
@@ -10,6 +10,37 @@ const StudentLogin = ({ onBackToLanding, onShowRegister, onBackToMain, onLoginSu
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    // Add floating particles to the background
+    const createParticles = () => {
+      const particlesContainer = document.querySelector('.floating-particles');
+      if (!particlesContainer) return;
+      
+      particlesContainer.innerHTML = '';
+      
+      for (let i = 0; i < 15; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        
+        // Random properties
+        const size = Math.random() * 10 + 5;
+        const posX = Math.random() * 100;
+        const delay = Math.random() * 15;
+        const duration = Math.random() * 10 + 15;
+        
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${posX}%`;
+        particle.style.animationDelay = `${delay}s`;
+        particle.style.animationDuration = `${duration}s`;
+        
+        particlesContainer.appendChild(particle);
+      }
+    };
+    
+    createParticles();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -68,6 +99,8 @@ const StudentLogin = ({ onBackToLanding, onShowRegister, onBackToMain, onLoginSu
 
   return (
     <div className="student-login-container">
+      <div className="floating-particles"></div>
+      
       <div className="student-login-card">
         <div className="student-login-header">
           <div className="logo-container">

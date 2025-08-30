@@ -1,4 +1,4 @@
-/* Student Login Styles - Matching Instructor Login Design */
+/* Student Login Styles - Enhanced with Animations */
 .student-login-container {
   min-height: 100vh;
   display: flex;
@@ -6,24 +6,81 @@
   justify-content: center;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.student-login-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,128L48,117.3C96,107,192,85,288,112C384,139,480,213,576,218.7C672,224,768,160,864,138.7C960,117,1056,139,1152,149.3C1248,160,1344,160,1392,160L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+  background-size: cover;
+  animation: waveAnimation 15s linear infinite;
+}
+
+@keyframes waveAnimation {
+  0% {
+    background-position-x: 0;
+  }
+  100% {
+    background-position-x: 1000px;
+  }
 }
 
 .student-login-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 20px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   padding: 40px;
   width: 100%;
   max-width: 400px;
   text-align: center;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+  animation: cardAppear 0.6s ease-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.student-login-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes cardAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .student-login-header {
   margin-bottom: 30px;
+  animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .logo-container {
   margin-bottom: 20px;
+  position: relative;
 }
 
 .logo-icon.student {
@@ -37,6 +94,38 @@
   margin: 0 auto 20px;
   color: white;
   font-size: 32px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.logo-icon.student::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  z-index: -1;
+  border-radius: 50%;
+  animation: rotatingBorder 3s linear infinite;
+}
+
+@keyframes rotatingBorder {
+  0% {
+    transform: rotate(0deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: rotate(360deg);
+    opacity: 0.7;
+  }
+}
+
+.logo-icon.student:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
 }
 
 .student-login-header h1 {
@@ -44,20 +133,47 @@
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 10px;
+  position: relative;
+  display: inline-block;
+}
+
+.student-login-header h1::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 3px;
+  animation: lineExpand 0.8s ease-out 0.5s both;
+}
+
+@keyframes lineExpand {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 50px;
+  }
 }
 
 .student-login-header p {
   color: #718096;
   font-size: 16px;
   margin: 0;
+  animation: fadeIn 0.8s ease-out 0.4s both;
 }
 
 .student-login-form {
   text-align: left;
+  animation: fadeIn 0.8s ease-out 0.6s both;
 }
 
 .form-group {
   margin-bottom: 20px;
+  position: relative;
 }
 
 .form-group label {
@@ -66,6 +182,11 @@
   color: #2d3748;
   font-weight: 600;
   font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.form-group:focus-within label {
+  color: #667eea;
 }
 
 .input-container {
@@ -80,16 +201,29 @@
   font-size: 16px;
   transition: all 0.3s ease;
   box-sizing: border-box;
+  background: #f9fafc;
 }
 
 .form-control:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  background: #fff;
 }
 
 .form-control.error {
   border-color: #e53e3e;
+  animation: shake 0.5s linear;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-8px); }
+  30% { transform: translateX(8px); }
+  45% { transform: translateX(-8px); }
+  60% { transform: translateX(8px); }
+  75% { transform: translateX(-8px); }
+  90% { transform: translateX(8px); }
 }
 
 .input-icon {
@@ -98,6 +232,11 @@
   top: 50%;
   transform: translateY(-50%);
   color: #a0aec0;
+  transition: color 0.3s ease;
+}
+
+.form-group:focus-within .input-icon {
+  color: #667eea;
 }
 
 .input-icon .password-toggle {
@@ -107,11 +246,18 @@
   cursor: pointer;
   padding: 5px;
   font-size: 16px;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .input-icon .password-toggle:hover {
   color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
 }
 
 .error-message {
@@ -123,6 +269,18 @@
   display: block;
   font-size: 12px;
   text-align: left;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .login-btn.student {
@@ -140,11 +298,28 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-btn.student::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
 }
 
 .login-btn.student:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.login-btn.student:hover:not(:disabled)::before {
+  left: 100%;
 }
 
 .login-btn.student:disabled {
@@ -156,6 +331,7 @@
   margin-top: 30px;
   padding-top: 20px;
   border-top: 1px solid #e2e8f0;
+  animation: fadeIn 0.8s ease-out 0.8s both;
 }
 
 .login-footer p {
@@ -172,11 +348,30 @@
   cursor: pointer;
   font-size: 14px;
   margin-left: 5px;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.register-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #764ba2;
+  transition: width 0.3s ease;
 }
 
 .register-link:hover {
   color: #764ba2;
+  background: rgba(118, 75, 162, 0.05);
+}
+
+.register-link:hover::after {
+  width: 100%;
 }
 
 .back-buttons {
@@ -199,18 +394,73 @@
   gap: 6px;
   font-size: 13px;
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.back-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .back-btn:hover {
   background: #edf2f7;
   border-color: #cbd5e0;
   color: #2d3748;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.back-btn:hover::before {
+  opacity: 1;
 }
 
 .back-btn i {
   font-size: 12px;
+  transition: transform 0.3s ease;
 }
 
+.back-btn:hover i {
+  transform: translateX(-3px);
+}
+
+/* Floating particles animation */
+.floating-particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  animation: float 15s infinite linear;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* Responsive styles */
 @media (max-width: 480px) {
   .student-login-card {
     padding: 30px 20px;
@@ -234,5 +484,9 @@
   .back-btn {
     width: 100%;
     justify-content: center;
+  }
+  
+  .student-login-container::before {
+    animation: waveAnimation 10s linear infinite;
   }
 }
