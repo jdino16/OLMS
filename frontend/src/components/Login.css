@@ -1,0 +1,353 @@
+/* Admin Login Styles - Enhanced Design */
+.admin-login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.admin-login-card {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  padding: 48px;
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  animation: cardSlideIn 0.6s ease-out;
+}
+
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.admin-login-header {
+  margin-bottom: 36px;
+}
+
+.logo-container {
+  margin-bottom: 24px;
+}
+
+.logo-icon.admin {
+  width: 90px;
+  height: 90px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  color: white;
+  font-size: 36px;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+  transition: transform 0.3s ease;
+}
+
+.logo-icon.admin:hover {
+  transform: scale(1.05);
+}
+
+.admin-login-header h1 {
+  color: #1a202c;
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.admin-login-header p {
+  color: #718096;
+  font-size: 18px;
+  margin: 0;
+  font-weight: 500;
+}
+
+.admin-login-form {
+  text-align: left;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 10px;
+  color: #2d3748;
+  font-weight: 700;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-container {
+  position: relative;
+}
+
+.form-control {
+  width: 100%;
+  padding: 16px 50px 16px 18px;
+  border: 3px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  background-color: #f8fafc;
+  color: #2d3748;
+  font-weight: 500;
+  position: relative;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #667eea;
+  background-color: white;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+}
+
+.form-control:hover {
+  border-color: #cbd5e0;
+  background-color: #f1f5f9;
+}
+
+.form-control::placeholder {
+  color: #a0aec0;
+  font-style: italic;
+  transition: color 0.3s ease;
+}
+
+.form-control:focus::placeholder {
+  color: #cbd5e0;
+}
+
+.input-icon {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #a0aec0;
+  transition: color 0.3s ease;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.input-icon:hover {
+  color: #667eea;
+  background-color: rgba(102, 126, 234, 0.1);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.input-icon i {
+  font-size: 20px;
+  transition: all 0.3s ease;
+}
+
+/* Password field specific styling - align eye icon to the right like username */
+.input-container.password-field .form-control {
+  padding: 16px 50px 16px 18px;
+}
+
+.input-container.password-field .input-icon {
+  right: 18px;
+  left: auto;
+}
+
+.input-icon .password-toggle {
+  background: none;
+  border: none;
+  color: #a0aec0;
+  cursor: pointer;
+  padding: 0;
+  font-size: 20px;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  position: relative;
+}
+
+.input-icon .password-toggle:hover {
+  color: #667eea;
+  background-color: rgba(102, 126, 234, 0.1);
+  transform: scale(1.05);
+}
+
+.input-icon .password-toggle:active {
+  transform: scale(0.95);
+}
+
+.input-icon .password-toggle:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+.input-icon .password-toggle i {
+  transition: all 0.3s ease;
+}
+
+.input-icon .password-toggle:hover i {
+  transform: scale(1.1);
+}
+
+/* Password visibility toggle animation */
+.input-icon .password-toggle .fa-eye {
+  animation: eyeOpen 0.3s ease-out;
+}
+
+.input-icon .password-toggle .fa-eye-slash {
+  animation: eyeClosed 0.3s ease-out;
+}
+
+@keyframes eyeOpen {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotate(-10deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes eyeClosed {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotate(10deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.login-btn.admin {
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  margin-top: 8px;
+}
+
+.login-btn.admin:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+.login-btn.admin:active {
+  transform: translateY(-1px);
+}
+
+.login-btn.admin:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.login-footer {
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 2px solid #f1f5f9;
+}
+
+.login-footer p {
+  color: #718096;
+  font-size: 14px;
+  margin: 0 0 12px 0;
+  font-weight: 500;
+}
+
+.login-footer p:first-child {
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* Enhanced responsive design */
+@media (max-width: 480px) {
+  .admin-login-card {
+    padding: 36px 24px;
+    margin: 20px;
+    border-radius: 20px;
+  }
+  
+  .admin-login-header h1 {
+    font-size: 28px;
+  }
+  
+  .logo-icon.admin {
+    width: 80px;
+    height: 80px;
+    font-size: 32px;
+  }
+  
+  .form-control {
+    padding: 14px 45px 14px 16px;
+    font-size: 16px;
+  }
+  
+  .input-container.password-field .form-control {
+    padding: 14px 45px 14px 16px;
+  }
+  
+  .input-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .input-icon .password-toggle {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  
+  .login-btn.admin {
+    padding: 16px;
+    font-size: 16px;
+  }
+}
+
+/* Loading state for button */
+.login-btn.admin .fa-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

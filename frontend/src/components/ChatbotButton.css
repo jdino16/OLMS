@@ -1,0 +1,92 @@
+.chatbot-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 9999;
+  animation: float 3s ease-in-out infinite;
+}
+
+.chatbot-button:hover {
+  transform: scale(1.1) translateY(-5px);
+  box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+}
+
+.chatbot-button:active {
+  transform: scale(0.95);
+}
+
+.chatbot-button-icon {
+  color: white;
+  font-size: 24px;
+  z-index: 2;
+  position: relative;
+}
+
+.chatbot-button-pulse {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  background: rgba(102, 126, 234, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .chatbot-button {
+    bottom: 20px;
+    right: 20px;
+    width: 55px;
+    height: 55px;
+  }
+  
+  .chatbot-button-icon {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chatbot-button {
+    bottom: 15px;
+    right: 15px;
+    width: 50px;
+    height: 50px;
+  }
+  
+  .chatbot-button-icon {
+    font-size: 18px;
+  }
+}
