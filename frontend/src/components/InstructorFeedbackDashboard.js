@@ -198,7 +198,12 @@ const InstructorFeedbackDashboard = ({ instructor }) => {
                 <i className="fas fa-star"></i>
               </div>
               <div className="stat-content">
-                <h3>{analytics.overall_stats?.avg_rating ? analytics.overall_stats.avg_rating.toFixed(1) : '0.0'}</h3>
+                <h3>{(() => {
+                  const rating = analytics.overall_stats?.avg_rating;
+                  if (rating === null || rating === undefined) return '0.0';
+                  const numRating = parseFloat(rating);
+                  return isNaN(numRating) ? '0.0' : numRating.toFixed(1);
+                })()}</h3>
                 <p>Average Rating</p>
               </div>
             </div>
@@ -246,7 +251,12 @@ const InstructorFeedbackDashboard = ({ instructor }) => {
                     <span className="stat-label">Reviews</span>
                   </div>
                   <div className="stat">
-                    <span className="stat-value">{category.avg_rating ? category.avg_rating.toFixed(1) : '0.0'}</span>
+                    <span className="stat-value">{(() => {
+                      const rating = category.avg_rating;
+                      if (rating === null || rating === undefined) return '0.0';
+                      const numRating = parseFloat(rating);
+                      return isNaN(numRating) ? '0.0' : numRating.toFixed(1);
+                    })()}</span>
                     <span className="stat-label">Avg Rating</span>
                   </div>
                   <div className="stat">
@@ -282,7 +292,12 @@ const InstructorFeedbackDashboard = ({ instructor }) => {
                     <td>{course.feedback_count}</td>
                     <td>
                       <span style={{ color: getRatingColor(course.avg_rating) }}>
-                        {course.avg_rating ? course.avg_rating.toFixed(1) : '0.0'}
+                        {(() => {
+                          const rating = course.avg_rating;
+                          if (rating === null || rating === undefined) return '0.0';
+                          const numRating = parseFloat(rating);
+                          return isNaN(numRating) ? '0.0' : numRating.toFixed(1);
+                        })()}
                       </span>
                     </td>
                     <td>{course.positive_count}</td>
@@ -454,7 +469,12 @@ const InstructorFeedbackDashboard = ({ instructor }) => {
                   <div className="trend-month">{month.month}</div>
                   <div className="trend-stats">
                     <span className="feedback-count">{month.feedback_count}</span>
-                    <span className="avg-rating">{month.avg_rating?.toFixed(1)}</span>
+                    <span className="avg-rating">{(() => {
+                      const rating = month.avg_rating;
+                      if (rating === null || rating === undefined) return '0.0';
+                      const numRating = parseFloat(rating);
+                      return isNaN(numRating) ? '0.0' : numRating.toFixed(1);
+                    })()}</span>
                   </div>
                 </div>
               ))}
@@ -473,7 +493,12 @@ const InstructorFeedbackDashboard = ({ instructor }) => {
                     <div className="course-stats">
                       <span className="rating">
                         <i className="fas fa-star"></i>
-                        {course.avg_rating?.toFixed(1)}
+                        {(() => {
+                          const rating = course.avg_rating;
+                          if (rating === null || rating === undefined) return '0.0';
+                          const numRating = parseFloat(rating);
+                          return isNaN(numRating) ? '0.0' : numRating.toFixed(1);
+                        })()}
                       </span>
                       <span className="feedback-count">
                         {course.feedback_count} reviews
@@ -496,7 +521,12 @@ const InstructorFeedbackDashboard = ({ instructor }) => {
                     <span>{area.category}</span>
                   </div>
                   <div className="area-stats">
-                    <span className="avg-rating">{area.avg_rating?.toFixed(1)}</span>
+                    <span className="avg-rating">{(() => {
+                      const rating = area.avg_rating;
+                      if (rating === null || rating === undefined) return '0.0';
+                      const numRating = parseFloat(rating);
+                      return isNaN(numRating) ? '0.0' : numRating.toFixed(1);
+                    })()}</span>
                     <span className="feedback-count">{area.feedback_count} reviews</span>
                   </div>
                 </div>

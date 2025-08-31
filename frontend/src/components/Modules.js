@@ -15,17 +15,11 @@ const Modules = () => {
     description: '',
     status: 'Active'
   });
-  const [toast, setToast] = useState({ show: false, message: '', type: '' });
 
   useEffect(() => {
     fetchModules();
     fetchCourses();
   }, []);
-
-  const showToast = (message, type = 'success') => {
-    setToast({ show: true, message, type });
-    setTimeout(() => setToast({ show: false, message: '', type: '' }), 3000);
-  };
 
   const fetchModules = async () => {
     try {
@@ -35,7 +29,6 @@ const Modules = () => {
     } catch (error) {
       setError('Failed to fetch modules');
       console.error('Error fetching modules:', error);
-      showToast('Failed to fetch modules', 'error');
     } finally {
       setLoading(false);
     }
@@ -74,19 +67,15 @@ const Modules = () => {
     try {
       if (editingModule) {
         await axios.put(`/api/modules/${editingModule.id}`, formData);
-        showToast('Module updated successfully!');
       } else {
         await axios.post('/api/modules', formData);
-        showToast('Module created successfully!');
       }
       
       fetchModules();
       setShowForm(false);
       resetForm();
     } catch (error) {
-      const errorMsg = error.response?.data?.error || 'Failed to save module';
-      setError(errorMsg);
-      showToast(errorMsg, 'error');
+      setError(error.response?.data?.error || 'Failed to save module');
     }
   };
 
@@ -106,20 +95,14 @@ const Modules = () => {
       try {
         await axios.delete(`/api/modules/${moduleId}`);
         fetchModules();
-        showToast('Module deleted successfully!');
       } catch (error) {
         setError('Failed to delete module');
-        showToast('Failed to delete module', 'error');
       }
     }
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    return new Date(dateString).toLocaleDateString();
   };
 
   const getStatusBadge = (status) => {
@@ -139,10 +122,7 @@ const Modules = () => {
   return (
     <div className="modules-container">
       <div className="page-header">
-        <h2>
-          <i className="fas fa-cubes me-2"></i>
-          Manage Modules
-        </h2>
+        <h2>Manage Modules</h2>
         <button 
           className="btn btn-primary"
           onClick={() => {
@@ -162,21 +142,11 @@ const Modules = () => {
         </div>
       )}
 
-      {toast.show && (
-        <div className={`toast toast-${toast.type}`}>
-          <i className={`fas ${toast.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`}></i>
-          {toast.message}
-        </div>
-      )}
-
       {showForm && (
         <div className="form-overlay">
           <div className="form-modal">
             <div className="form-header">
-              <h3>
-                <i className={`fas ${editingModule ? 'fa-edit' : 'fa-plus'} me-2`}></i>
-                {editingModule ? 'Edit Module' : 'Add New Module'}
-              </h3>
+              <h3>{editingModule ? 'Edit Module' : 'Add New Module'}</h3>
               <button 
                 className="close-btn"
                 onClick={() => {
@@ -191,10 +161,7 @@ const Modules = () => {
             <form onSubmit={handleSubmit} className="module-form">
               <div className="form-row">
                 <div className="form-group">
-                  <label>
-                    <i className="fas fa-heading"></i>
-                    Module Name *
-                  </label>
+                  <label>Module Name *</label>
                   <input
                     type="text"
                     name="module_name"
@@ -205,10 +172,7 @@ const Modules = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>
-                    <i className="fas fa-graduation-cap"></i>
-                    Course *
-                  </label>
+                  <label>Course *</label>
                   <select
                     name="course_id"
                     value={formData.course_id}
@@ -226,10 +190,7 @@ const Modules = () => {
               </div>
 
               <div className="form-group">
-                <label>
-                  <i className="fas fa-align-left"></i>
-                  Description
-                </label>
+                <label>Description</label>
                 <textarea
                   name="description"
                   value={formData.description}
@@ -241,10 +202,7 @@ const Modules = () => {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>
-                    <i className="fas fa-toggle-on"></i>
-                    Status
-                  </label>
+                  <label>Status</label>
                   <select
                     name="status"
                     value={formData.status}
@@ -261,11 +219,9 @@ const Modules = () => {
                   setShowForm(false);
                   resetForm();
                 }}>
-                  <i className="fas fa-times"></i>
                   Cancel
                 </button>
                 <button type="submit" className="btn btn-primary">
-                  <i className={`fas ${editingModule ? 'fa-save' : 'fa-plus'}`}></i>
                   {editingModule ? 'Update' : 'Create'} Module
                 </button>
               </div>
@@ -290,37 +246,25 @@ const Modules = () => {
           <tbody>
             {modules.map((module) => (
               <tr key={module.id}>
-                <td data-label="ID">{module.id}</td>
-                <td data-label="Module Name" className="module-name">
-                  <i className="fas fa-cube me-2"></i>
-                  {module.module_name}
-                </td>
-                <td data-label="Course">
-                  <span className="course-name">
-                    <i className="fas fa-book me-1"></i>
-                    {module.course_name}
-                  </span>
-                </td>
-                <td data-label="Description" className="module-description">
+                <td>{module.id}</td>
+                <td className="module-name">{module.module_name}</td>
+                <td className="course-name">{module.course_name}</td>
+                <td className="module-description">
                   {module.description ? (
                     module.description.length > 50 
                       ? `${module.description.substring(0, 50)}...` 
                       : module.description
                   ) : '-'}
                 </td>
-                <td data-label="Status">{getStatusBadge(module.status)}</td>
-                <td data-label="Created">
-                  <i className="fas fa-calendar me-2"></i>
-                  {formatDate(module.created_at)}
-                </td>
-                <td data-label="Actions" className="actions">
+                <td>{getStatusBadge(module.status)}</td>
+                <td>{formatDate(module.created_at)}</td>
+                <td className="actions">
                   <button 
                     className="btn btn-sm btn-edit"
                     onClick={() => handleEdit(module)}
                     title="Edit"
                   >
                     <i className="fas fa-edit"></i>
-                    Edit
                   </button>
                   <button 
                     className="btn btn-sm btn-delete"
@@ -328,7 +272,6 @@ const Modules = () => {
                     title="Delete"
                   >
                     <i className="fas fa-trash"></i>
-                    Delete
                   </button>
                 </td>
               </tr>
@@ -347,23 +290,11 @@ const Modules = () => {
                 setShowForm(true);
               }}
             >
-              <i className="fas fa-plus me-2"></i>
               Add First Module
             </button>
           </div>
         )}
       </div>
-
-      <button 
-        className="floating-btn"
-        onClick={() => {
-          resetForm();
-          setShowForm(true);
-        }}
-        title="Add Module"
-      >
-        <i className="fas fa-plus"></i>
-      </button>
     </div>
   );
 };

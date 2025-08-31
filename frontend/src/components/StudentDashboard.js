@@ -5,6 +5,7 @@ import Messages from './Messages';
 import AIRecommendations from './AIRecommendations';
 import CourseProgress from './CourseProgress';
 import FeedbackDashboard from './FeedbackDashboard';
+import StudentCertificates from './StudentCertificates';
 import './StudentDashboard.css';
 
 const StudentDashboard = ({ student, onLogout }) => {
@@ -970,6 +971,14 @@ const StudentDashboard = ({ student, onLogout }) => {
          >
            <i className="fas fa-comments"></i>
            <span>Feedback</span>
+         </button>
+         
+         <button 
+           className={`header-nav-btn ${currentPage === 'certificates' ? 'active' : ''}`}
+           onClick={() => handlePageChange('certificates')}
+         >
+           <i className="fas fa-certificate"></i>
+           <span>Certificates</span>
          </button>
             
             <button 
@@ -2528,6 +2537,9 @@ const StudentDashboard = ({ student, onLogout }) => {
         )}
         {currentPage === 'feedback' && (
           <FeedbackDashboard student={student} />
+        )}
+        {currentPage === 'certificates' && (
+          <StudentCertificates student={student} />
         )}
         {showCourseViewer && renderCourseViewer()}
         {showQuiz && renderQuiz()}

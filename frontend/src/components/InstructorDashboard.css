@@ -1,19 +1,3 @@
-/* Enhanced Instructor Dashboard CSS with Animations */
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-* {
-  box-sizing: border-box;
-  transition: all 0.3s ease;
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f7fafc;
-}
-
 .instructor-dashboard {
   min-height: 100vh;
   background: #f7fafc;
@@ -24,26 +8,19 @@ body {
   min-height: 100vh;
 }
 
-/* Sidebar with enhanced styling */
 .sidebar.instructor {
   width: 280px;
   background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
   color: white;
   display: flex;
   flex-direction: column;
-  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.15);
-  position: fixed;
-  height: 100vh;
-  z-index: 100;
-  transform: translateX(0);
-  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-header {
   padding: 30px 20px;
   text-align: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  animation: fadeIn 0.8s ease;
 }
 
 .logo-icon.instructor {
@@ -56,20 +33,12 @@ body {
   justify-content: center;
   margin: 0 auto 15px;
   font-size: 24px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-}
-
-.logo-icon.instructor:hover {
-  transform: scale(1.05);
-  background: rgba(255, 255, 255, 0.3);
 }
 
 .sidebar-header h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  letter-spacing: 0.5px;
 }
 
 .sidebar-nav {
@@ -78,66 +47,32 @@ body {
 }
 
 .nav-item {
-  width: 90%;
-  margin: 5px 5%;
+  width: 100%;
   padding: 15px 20px;
   background: none;
   border: none;
   color: white;
   text-align: left;
   cursor: pointer;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   gap: 12px;
   font-size: 16px;
-  border-radius: 8px;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.nav-item:before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: all 0.6s ease;
-}
-
-.nav-item:hover:before {
-  left: 100%;
 }
 
 .nav-item:hover {
   background: rgba(255, 255, 255, 0.1);
-  transform: translateX(5px);
 }
 
 .nav-item.active {
   background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transform: translateX(5px);
-}
-
-.nav-item.active:after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 60%;
-  background: white;
-  border-radius: 4px 0 0 4px;
+  border-right: 4px solid white;
 }
 
 .nav-item i {
   width: 20px;
   text-align: center;
-  font-size: 18px;
 }
 
 .sidebar-footer {
@@ -153,55 +88,29 @@ body {
   color: white;
   border-radius: 8px;
   cursor: pointer;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   font-size: 14px;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.logout-btn:after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.5);
-  opacity: 0;
-  border-radius: 100%;
-  transform: scale(1, 1) translate(-50%);
-  transform-origin: 50% 50%;
 }
 
 .logout-btn:hover {
   background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.logout-btn:hover:after {
-  animation: ripple 1s ease-out;
-}
-
-/* Main Content Area */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-left: 280px;
-  width: calc(100% - 280px);
 }
 
 .dashboard-header {
   background: white;
   padding: 20px 30px;
   border-bottom: 1px solid #e2e8f0;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  animation: slideDown 0.5s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .header-content {
@@ -214,20 +123,7 @@ body {
   margin: 0;
   color: #2d3748;
   font-size: 24px;
-  font-weight: 700;
-  position: relative;
-  display: inline-block;
-}
-
-.dashboard-header h1:after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 40px;
-  height: 3px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  border-radius: 3px;
+  font-weight: 600;
 }
 
 .user-info {
@@ -235,36 +131,30 @@ body {
   align-items: center;
   gap: 15px;
   color: #4a5568;
-  font-weight: 500;
 }
 
 .user-avatar {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #667eea;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-size: 18px;
-  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-  transition: all 0.3s ease;
-}
-
-.user-avatar:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
 }
 
 .dashboard-content {
   flex: 1;
   padding: 30px;
   overflow-y: auto;
-  animation: fadeIn 0.7s ease;
 }
 
-/* Stats Grid with enhanced animations */
+.overview-section {
+  margin-bottom: 30px;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -276,39 +166,15 @@ body {
   background: white;
   padding: 25px;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: center;
   gap: 20px;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  position: relative;
-  overflow: hidden;
-  animation: fadeInUp 0.6s ease;
-}
-
-.stat-card:nth-child(1) { animation-delay: 0.1s; }
-.stat-card:nth-child(2) { animation-delay: 0.2s; }
-.stat-card:nth-child(3) { animation-delay: 0.3s; }
-.stat-card:nth-child(4) { animation-delay: 0.4s; }
-
-.stat-card:before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 5px;
-  height: 100%;
-  background: linear-gradient(to bottom, #667eea, #764ba2);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 .stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
-}
-
-.stat-card:hover:before {
-  width: 8px;
+  transform: translateY(-2px);
 }
 
 .stat-icon {
@@ -321,22 +187,13 @@ body {
   justify-content: center;
   color: white;
   font-size: 24px;
-  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
-  transition: all 0.3s ease;
-}
-
-.stat-card:hover .stat-icon {
-  transform: scale(1.1) rotate(5deg);
 }
 
 .stat-content h3 {
   margin: 0 0 5px 0;
   font-size: 32px;
-  font-weight: 800;
+  font-weight: 700;
   color: #2d3748;
-  background: linear-gradient(135deg, #2d3748, #4a5568);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 .stat-content p {
@@ -346,43 +203,26 @@ body {
   font-weight: 500;
 }
 
-/* Welcome section */
 .welcome-section {
   background: white;
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  margin-bottom: 30px;
-  animation: fadeIn 0.8s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.welcome-section:before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .welcome-section h2 {
   margin: 0 0 10px 0;
   color: #2d3748;
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .welcome-section p {
   margin: 0;
   color: #718096;
   font-size: 16px;
-  line-height: 1.5;
 }
 
-/* Section styling */
 .courses-section,
 .students-section,
 .modules-section,
@@ -390,9 +230,7 @@ body {
   background: white;
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  margin-bottom: 30px;
-  animation: fadeInUp 0.7s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .courses-section h2,
@@ -402,26 +240,9 @@ body {
   margin: 0 0 20px 0;
   color: #2d3748;
   font-size: 24px;
-  font-weight: 700;
-  position: relative;
-  display: inline-block;
+  font-weight: 600;
 }
 
-.courses-section h2:after,
-.students-section h2:after,
-.modules-section h2:after,
-.profile-section h2:after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 0;
-  width: 50px;
-  height: 4px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  border-radius: 2px;
-}
-
-/* Profile info */
 .profile-info {
   display: grid;
   gap: 20px;
@@ -433,14 +254,6 @@ body {
   padding: 15px;
   background: #f7fafc;
   border-radius: 8px;
-  transition: all 0.3s ease;
-  border-left: 4px solid transparent;
-}
-
-.profile-field:hover {
-  background: #edf2f7;
-  border-left-color: #667eea;
-  transform: translateX(5px);
 }
 
 .profile-field label {
@@ -454,7 +267,6 @@ body {
   margin-left: 15px;
 }
 
-/* Loading animation */
 .loading-container {
   display: flex;
   align-items: center;
@@ -471,31 +283,56 @@ body {
 .loading-spinner i {
   font-size: 48px;
   margin-bottom: 20px;
-  animation: spin 1.5s linear infinite;
 }
 
 .loading-spinner p {
   margin: 0;
   font-size: 18px;
   color: #4a5568;
-  animation: pulse 2s infinite;
 }
 
-/* Table Styles with enhancements */
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+  
+  .sidebar.instructor {
+    width: 100%;
+    order: 2;
+  }
+  
+  .main-content {
+    order: 1;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-content {
+    padding: 20px;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+}
+
+/* Table Styles */
 .table-container {
   margin-top: 20px;
   overflow-x: auto;
   background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  animation: fadeIn 0.8s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .modules-table,
 .lessons-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+  border-collapse: collapse;
   min-width: 600px;
 }
 
@@ -503,7 +340,7 @@ body {
 .modules-table td,
 .lessons-table th,
 .lessons-table td {
-  padding: 16px 15px;
+  padding: 12px 15px;
   text-align: left;
   border-bottom: 1px solid #e2e8f0;
 }
@@ -514,27 +351,17 @@ body {
   font-weight: 600;
   color: #2d3748;
   font-size: 14px;
-  position: sticky;
-  top: 0;
 }
 
 .modules-table td,
 .lessons-table td {
   color: #4a5568;
   font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-.modules-table tr,
-.lessons-table tr {
-  transition: all 0.3s ease;
 }
 
 .modules-table tr:hover,
 .lessons-table tr:hover {
   background: #f7fafc;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
 
 .table-actions {
@@ -548,8 +375,7 @@ body {
   background: white;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  animation: fadeInUp 0.7s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .lessons-section h3 {
@@ -566,7 +392,6 @@ body {
   background: #f7fafc;
   border-radius: 8px;
   border: 2px dashed #e2e8f0;
-  animation: fadeIn 0.8s ease;
 }
 
 .no-lessons p {
@@ -576,13 +401,11 @@ body {
 
 /* Module Status */
 .module-status {
-  padding: 6px 12px;
+  padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
-  display: inline-block;
-  animation: pulse 2s infinite;
 }
 
 .module-status.active {
@@ -595,153 +418,103 @@ body {
   color: #c53030;
 }
 
-/* Buttons with enhanced styling */
+/* Buttons */
 .btn {
-  padding: 10px 18px;
+  padding: 8px 16px;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 8px;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn:after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.5);
-  opacity: 0;
-  border-radius: 100%;
-  transform: scale(1, 1) translate(-50%);
-  transform-origin: 50% 50%;
-}
-
-.btn:hover:after {
-  animation: ripple 1s ease-out;
+  gap: 6px;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #667eea;
   color: white;
-  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+  background: #5a67d8;
 }
 
 .btn-secondary {
   background: #e2e8f0;
   color: #4a5568;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .btn-secondary:hover {
   background: #cbd5e0;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .btn-danger {
-  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+  background: #e53e3e;
   color: white;
-  box-shadow: 0 4px 10px rgba(229, 62, 62, 0.3);
 }
 
 .btn-danger:hover {
-  background: linear-gradient(135deg, #c53030 0%, #9b2c2c 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(229, 62, 62, 0.4);
+  background: #c53030;
 }
 
 .btn-small {
-  padding: 8px 14px;
+  padding: 6px 12px;
   font-size: 12px;
 }
 
-/* Modal enhancements */
-.add-lesson-modal,
-.edit-profile-modal,
-.change-password-modal {
+/* Add Lesson Modal */
+.add-lesson-modal {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.3s ease;
-  backdrop-filter: blur(5px);
 }
 
 .modal-content {
   background: white;
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 30px;
   width: 90%;
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-  animation: modalSlideIn 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-  position: relative;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 20px;
 }
 
 .modal-header h3 {
   margin: 0;
   color: #2d3748;
-  font-weight: 700;
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 20px;
   cursor: pointer;
   color: #718096;
   padding: 5px;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
 }
 
 .close-btn:hover {
   color: #2d3748;
-  background: #f7fafc;
-  transform: rotate(90deg);
 }
 
-/* Form enhancements */
-.add-lesson-form,
-.edit-profile-form,
-.change-password-form {
+/* Add Lesson Form */
+.add-lesson-form {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -756,41 +529,36 @@ body {
 .form-group label {
   font-weight: 600;
   color: #2d3748;
-  font-size: 14px;
 }
 
 .form-control {
-  padding: 12px 14px;
+  padding: 10px 12px;
   border: 2px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 14px;
-  transition: all 0.3s ease;
-  font-family: inherit;
+  transition: border-color 0.3s ease;
 }
 
 .form-control:focus {
   outline: none;
   border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .form-control[type="file"] {
-  padding: 10px 12px;
+  padding: 8px 12px;
 }
 
 .form-group textarea.form-control {
   resize: vertical;
-  min-height: 100px;
+  min-height: 80px;
   font-family: inherit;
 }
 
 .form-actions {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   justify-content: flex-end;
-  margin-top: 25px;
-  padding-top: 15px;
-  border-top: 1px solid #e2e8f0;
+  margin-top: 20px;
 }
 
 /* Profile Section Styles */
@@ -798,7 +566,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 .profile-header h2 {
@@ -812,204 +580,70 @@ body {
 }
 
 .loading-profile i {
-  font-size: 32px;
-  margin-bottom: 15px;
+  font-size: 24px;
+  margin-bottom: 10px;
   color: #667eea;
-  animation: spin 1.5s linear infinite;
 }
 
 .loading-profile p {
   margin: 0;
-  animation: pulse 2s infinite;
+}
+
+/* Edit Profile Modal */
+.edit-profile-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.edit-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Profile Actions */
+.profile-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Change Password Modal */
+.change-password-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.change-password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 /* Error Styling */
 .form-control.error {
   border-color: #e53e3e;
-  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
 }
 
 .error-message {
   color: #e53e3e;
   font-size: 12px;
-  margin-top: 5px;
+  margin-top: 4px;
   display: block;
-  animation: shake 0.5s ease;
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.7; }
-  100% { opacity: 1; }
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(0, 0);
-    opacity: 0.5;
-  }
-  20% {
-    transform: scale(50, 50);
-    opacity: 0.3;
-  }
-  100% {
-    transform: scale(100, 100);
-    opacity: 0;
-  }
-}
-
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-50px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-  20%, 40%, 60%, 80% { transform: translateX(5px); }
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 1024px) {
-  .sidebar.instructor {
-    transform: translateX(-100%);
-    width: 260px;
-  }
-  
-  .sidebar.instructor.mobile-open {
-    transform: translateX(0);
-  }
-  
-  .main-content {
-    margin-left: 0;
-    width: 100%;
-  }
-  
-  .mobile-menu-toggle {
-    display: block;
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 101;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    cursor: pointer;
-  }
-}
-
-@media (max-width: 768px) {
-  .dashboard-layout {
-    flex-direction: column;
-  }
-  
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .dashboard-content {
-    padding: 20px;
-  }
-  
-  .header-content {
-    flex-direction: column;
-    gap: 15px;
-    align-items: flex-start;
-  }
-  
-  .user-info {
-    width: 100%;
-    justify-content: space-between;
-    padding-top: 15px;
-    border-top: 1px solid #e2e8f0;
-  }
-  
-  .modal-content {
-    padding: 20px;
-    width: 95%;
-  }
-  
-  .form-actions {
-    flex-direction: column;
-  }
-  
-  .btn {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .table-actions {
-    flex-direction: column;
-  }
-}
-
-/* Print Styles */
-@media print {
-  .sidebar.instructor,
-  .dashboard-header,
-  .btn {
-    display: none !important;
-  }
-  
-  .main-content {
-    margin-left: 0;
-    width: 100%;
-  }
-  
-  .stat-card,
-  .welcome-section,
-  .courses-section,
-  .students-section,
-  .modules-section,
-  .profile-section {
-    box-shadow: none;
-    border: 1px solid #e2e8f0;
-    break-inside: avoid;
-  }
 }

@@ -5,14 +5,6 @@
   justify-content: center;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
-  animation: gradientShift 10s ease infinite;
-  background-size: 200% 200%;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
 
 .instructor-register-card {
@@ -23,30 +15,10 @@
   width: 100%;
   max-width: 800px;
   text-align: center;
-  animation: cardAppear 0.6s ease-out;
-  transform-origin: center;
-  overflow: hidden;
-}
-
-@keyframes cardAppear {
-  0% { 
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  100% { 
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
 }
 
 .instructor-register-header {
   margin-bottom: 30px;
-  animation: fadeIn 0.8s ease-out 0.2s both;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .logo-container {
@@ -64,20 +36,6 @@
   margin: 0 auto 20px;
   color: white;
   font-size: 32px;
-  animation: pulse 2s infinite;
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
-  transition: all 0.3s ease;
-}
-
-.logo-icon.instructor:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 25px rgba(102, 126, 234, 0.6);
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
 }
 
 .instructor-register-header h1 {
@@ -95,12 +53,6 @@
 
 .instructor-register-form {
   text-align: left;
-  animation: formAppear 0.8s ease-out 0.4s both;
-}
-
-@keyframes formAppear {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .form-row {
@@ -112,7 +64,6 @@
 
 .form-group {
   margin-bottom: 20px;
-  position: relative;
 }
 
 .form-group label {
@@ -121,7 +72,6 @@
   color: #2d3748;
   font-weight: 600;
   font-size: 14px;
-  transition: all 0.3s ease;
 }
 
 .input-container {
@@ -142,7 +92,6 @@
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  transform: translateY(-2px);
 }
 
 .form-control[type="date"] {
@@ -167,11 +116,6 @@ textarea.form-control {
   resize: vertical;
   min-height: 80px;
   padding: 12px 15px;
-  transition: all 0.3s ease;
-}
-
-textarea.form-control:focus {
-  min-height: 100px;
 }
 
 .input-icon {
@@ -181,19 +125,6 @@ textarea.form-control:focus {
   transform: translateY(-50%);
   color: #a0aec0;
   font-size: 16px;
-  transition: all 0.3s ease;
-  z-index: 1;
-}
-
-.input-icon.focused {
-  color: #667eea;
-  animation: iconPulse 0.5s ease;
-}
-
-@keyframes iconPulse {
-  0% { transform: translateY(-50%) scale(1); }
-  50% { transform: translateY(-50%) scale(1.2); }
-  100% { transform: translateY(-50%) scale(1); }
 }
 
 .password-toggle {
@@ -207,15 +138,11 @@ textarea.form-control:focus {
   cursor: pointer;
   padding: 5px;
   font-size: 16px;
-  transition: all 0.3s ease;
-  border-radius: 50%;
-  z-index: 2;
+  transition: color 0.3s ease;
 }
 
 .password-toggle:hover {
   color: #667eea;
-  background-color: rgba(102, 126, 234, 0.1);
-  transform: translateY(-50%) scale(1.1);
 }
 
 .error-message {
@@ -228,13 +155,6 @@ textarea.form-control:focus {
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  animation: shake 0.5s ease;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-5px); }
-  40%, 80% { transform: translateX(5px); }
 }
 
 .success-message {
@@ -247,13 +167,6 @@ textarea.form-control:focus {
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  animation: successPulse 0.5s ease;
-}
-
-@keyframes successPulse {
-  0% { transform: scale(0.95); opacity: 0; }
-  50% { transform: scale(1.02); }
-  100% { transform: scale(1); opacity: 1; }
 }
 
 .register-btn.instructor {
@@ -272,32 +185,11 @@ textarea.form-control:focus {
   justify-content: center;
   gap: 8px;
   margin-bottom: 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-.register-btn.instructor::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: 0.5s;
 }
 
 .register-btn.instructor:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-}
-
-.register-btn.instructor:hover:not(:disabled)::before {
-  left: 100%;
-}
-
-.register-btn.instructor:active:not(:disabled) {
-  transform: translateY(0);
 }
 
 .register-btn.instructor:disabled {
@@ -309,7 +201,6 @@ textarea.form-control:focus {
   margin-top: 20px;
   padding-top: 20px;
   border-top: 1px solid #e2e8f0;
-  animation: fadeIn 0.8s ease-out 0.6s both;
 }
 
 .register-footer p {
@@ -326,28 +217,11 @@ textarea.form-control:focus {
   cursor: pointer;
   font-size: 14px;
   margin-left: 5px;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.login-link::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 1px;
-  background: #764ba2;
-  transition: width 0.3s ease;
+  transition: color 0.3s ease;
 }
 
 .login-link:hover {
   color: #764ba2;
-  text-decoration: none;
-}
-
-.login-link:hover::after {
-  width: 100%;
 }
 
 @media (max-width: 768px) {
@@ -378,18 +252,6 @@ textarea.form-control:focus {
   
   .instructor-register-card {
     padding: 20px 15px;
-    animation: mobileCardAppear 0.6s ease-out;
-  }
-  
-  @keyframes mobileCardAppear {
-    0% { 
-      opacity: 0;
-      transform: scale(0.98);
-    }
-    100% { 
-      opacity: 1;
-      transform: scale(1);
-    }
   }
   
   .form-control {

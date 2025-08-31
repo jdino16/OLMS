@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import './StudentRegister.css';
 
@@ -9,31 +9,13 @@ const StudentRegister = ({ onBackToLanding, onShowLogin, onBackToMain }) => {
     email: '',
     phone_number: '',
     dob: '',
-    gender: '',
+    gender: 'Other',
     address: '',
     password: '',
     confirm_password: ''
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [passwordStrength, setPasswordStrength] = useState('');
-
-  // Check password strength
-  useEffect(() => {
-    if (formData.password) {
-      let strength = 'weak';
-      if (formData.password.length >= 8) {
-        if (/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])/.test(formData.password)) {
-          strength = 'strong';
-        } else if (formData.password.length >= 8 && /(?=.*[a-z])(?=.*[A-Z])/.test(formData.password)) {
-          strength = 'medium';
-        }
-      }
-      setPasswordStrength(strength);
-    } else {
-      setPasswordStrength('');
-    }
-  }, [formData.password]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,20 +52,6 @@ const StudentRegister = ({ onBackToLanding, onShowLogin, onBackToMain }) => {
     
     if (!formData.dob) {
       newErrors.dob = 'Date of birth is required';
-    } else {
-      // Validate age (at least 13 years old)
-      const birthDate = new Date(formData.dob);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-      
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      
-      if (age < 13) {
-        newErrors.dob = 'You must be at least 13 years old to register';
-      }
     }
     
     if (!formData.gender) {
@@ -114,12 +82,6 @@ const StudentRegister = ({ onBackToLanding, onShowLogin, onBackToMain }) => {
     e.preventDefault();
     
     if (!validateForm()) {
-      // Add shake animation to error fields
-      const errorFields = document.querySelectorAll('.form-control.error');
-      errorFields.forEach(field => {
-        field.classList.remove('error');
-        setTimeout(() => field.classList.add('error'), 10);
-      });
       return;
     }
     
@@ -128,12 +90,8 @@ const StudentRegister = ({ onBackToLanding, onShowLogin, onBackToMain }) => {
       const response = await axios.post('/api/student/register', formData);
       
       if (response.data.success) {
-        // Add success animation
-        document.querySelector('.register-container').classList.add('success-animation');
-        setTimeout(() => {
-          alert('Registration successful! You can now login with your credentials.');
-          onShowLogin();
-        }, 500);
+        alert('Registration successful! You can now login with your credentials.');
+        onShowLogin();
       }
     } catch (error) {
       console.error('Registration error:', error);
@@ -146,14 +104,6 @@ const StudentRegister = ({ onBackToLanding, onShowLogin, onBackToMain }) => {
       setLoading(false);
     }
   };
-
-  const LoadingDots = () => (
-    <div className="loading-dots">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-  );
 
   return (
     <div className="student-register">
@@ -171,7 +121,7 @@ const StudentRegister = ({ onBackToLanding, onShowLogin, onBackToMain }) => {
           </div>
           <div className="logo-section">
             <div className="logo-icon">
-              <i className="fas fa-user-graduate"></i>
+              <i className="fas fa-graduation-cap"></i>
             </div>
             <h2>Student Registration</h2>
           </div>
@@ -181,9 +131,7 @@ const StudentRegister = ({ onBackToLanding, onShowLogin, onBackToMain }) => {
         <form onSubmit={handleSubmit} className="register-form">
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="student_name">
-                <i className="fas fa-user"></i> Full Name *
-              </label>
+              <label htmlFor="student_name">Full Name *</label>
               <input
                 type="text"
                 id="student_name"
@@ -194,17 +142,12 @@ const StudentRegister = ({ onBackToLanding, onShowLogin, onBackToMain }) => {
                 placeholder="Enter your full name"
               />
               {errors.student_name && (
-                <span className="error-message">
-                  <i className="fas fa-exclamation-circle"></i>
-                  {errors.student_name}
-                </span>
+                <span className="error-message">{errors.student_name}</span>
               )}
             </div>
 
             <div className="form-group">
-              <label htmlFor="username">
-                <i className="fas fa-at"></i> Username *
-              </label>
+              <label htmlFor="username">Username *</label>
               <input
                 type="text"
                 id="username"
@@ -215,19 +158,14 @@ const StudentRegister = ({ onBackToLanding, onShowLogin, onBackToMain }) => {
                 placeholder="Choose a username"
               />
               {errors.username && (
-                <span className="error-message">
-                  <i className="fas fa-exclamation-circle"></i>
-                  {errors.username}
-                </span>
+                <span className="error-message">{errors.username}</span>
               )}
             </div>
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="email">
-                <i className="fas fa-envelope"></i> Email Address *
-              </label>
+              <label htmlFor="email">Email Address *</label>
               <input
                 type="email"
                 id="email"
@@ -238,17 +176,12 @@ const StudentRegister = ({ onBackToLanding, onShowLogin, onBackToMain }) => {
                 placeholder="Enter your email address"
               />
               {errors.email && (
-                <span className="error-message">
-                  <i className="fas fa-exclamation-circle"></i>
-                  {errors.email}
-                </span>
+                <span className="error-message">{errors.email}</span>
               )}
             </div>
 
             <div className="form-group">
-              <label htmlFor="phone_number">
-                <i className="fas fa-phone"></i> Phone Number *
-              </label>
+              <label htmlFor="phone_number">Phone Number *</label>
               <input
                 type="tel"
                 id="phone_number"
@@ -259,19 +192,12 @@ const StudentRegister = ({ onBackToLanding, onShowLogin, onBackToMain }) => {
                 placeholder="Enter your phone number"
               />
               {errors.phone_number && (
-                <span className="error-message">
-                  <i className="fas fa-exclamation-circle"></i>
-                  {errors.phone_number}
-                </span>
+                <span className="error-message">{errors.phone_number}</span>
               )}
             </div>
-          </div>
-
-          <div className="form-row">
+            
             <div className="form-group">
-              <label htmlFor="dob">
-                <i className="fas fa-calendar-alt"></i> Date of Birth *
-              </label>
+              <label htmlFor="dob">Date of Birth *</label>
               <input
                 type="date"
                 id="dob"
@@ -279,25 +205,24 @@ const StudentRegister = ({ onBackToLanding, onShowLogin, onBackToMain }) => {
                 value={formData.dob}
                 onChange={handleChange}
                 className={`form-control ${errors.dob ? 'error' : ''}`}
+                required
               />
               {errors.dob && (
-                <span className="error-message">
-                  <i className="fas fa-exclamation-circle"></i>
-                  {errors.dob}
-                </span>
+                <span className="error-message">{errors.dob}</span>
               )}
             </div>
+          </div>
 
+          <div className="form-row">
             <div className="form-group">
-              <label htmlFor="gender">
-                <i className="fas fa-venus-mars"></i> Gender *
-              </label>
+              <label htmlFor="gender">Gender *</label>
               <select
                 id="gender"
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
                 className={`form-control ${errors.gender ? 'error' : ''}`}
+                required
               >
                 <option value="">Select Gender</option>
                 <option value="Male">Male</option>
@@ -305,40 +230,31 @@ const StudentRegister = ({ onBackToLanding, onShowLogin, onBackToMain }) => {
                 <option value="Other">Other</option>
               </select>
               {errors.gender && (
-                <span className="error-message">
-                  <i className="fas fa-exclamation-circle"></i>
-                  {errors.gender}
-                </span>
+                <span className="error-message">{errors.gender}</span>
+              )}
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="address">Address *</label>
+              <textarea
+                id="address"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                className={`form-control ${errors.address ? 'error' : ''}`}
+                placeholder="Enter your address"
+                rows="3"
+                required
+              />
+              {errors.address && (
+                <span className="error-message">{errors.address}</span>
               )}
             </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="address">
-              <i className="fas fa-map-marker-alt"></i> Address *
-            </label>
-            <textarea
-              id="address"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              className={`form-control ${errors.address ? 'error' : ''}`}
-              placeholder="Enter your address"
-              rows="3"
-            />
-            {errors.address && (
-              <span className="error-message">
-                <i className="fas fa-exclamation-circle"></i>
-                {errors.address}
-              </span>
-            )}
-          </div>
-
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="password">
-                <i className="fas fa-lock"></i> Password *
-              </label>
+              <label htmlFor="password">Password *</label>
               <input
                 type="password"
                 id="password"
@@ -348,21 +264,13 @@ const StudentRegister = ({ onBackToLanding, onShowLogin, onBackToMain }) => {
                 className={`form-control ${errors.password ? 'error' : ''}`}
                 placeholder="Create a password"
               />
-              {formData.password && (
-                <div className={`password-strength strength-${passwordStrength}`}></div>
-              )}
               {errors.password && (
-                <span className="error-message">
-                  <i className="fas fa-exclamation-circle"></i>
-                  {errors.password}
-                </span>
+                <span className="error-message">{errors.password}</span>
               )}
             </div>
 
             <div className="form-group">
-              <label htmlFor="confirm_password">
-                <i className="fas fa-lock"></i> Confirm Password *
-              </label>
+              <label htmlFor="confirm_password">Confirm Password *</label>
               <input
                 type="password"
                 id="confirm_password"
@@ -373,31 +281,17 @@ const StudentRegister = ({ onBackToLanding, onShowLogin, onBackToMain }) => {
                 placeholder="Confirm your password"
               />
               {errors.confirm_password && (
-                <span className="error-message">
-                  <i className="fas fa-exclamation-circle"></i>
-                  {errors.confirm_password}
-                </span>
+                <span className="error-message">{errors.confirm_password}</span>
               )}
             </div>
           </div>
 
           <div className="form-actions">
             <button type="button" onClick={onShowLogin} className="btn btn-outline">
-              <i className="fas fa-sign-in-alt"></i>
               Already have an account? Login
             </button>
             <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? (
-                <>
-                  <LoadingDots />
-                  Creating Account...
-                </>
-              ) : (
-                <>
-                  <i className="fas fa-user-plus"></i>
-                  Create Account
-                </>
-              )}
+              {loading ? 'Creating Account...' : 'Create Account'}
             </button>
           </div>
         </form>

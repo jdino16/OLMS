@@ -2,7 +2,6 @@
 .student-landing {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Header Styles */
@@ -14,18 +13,6 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  animation: slideDown 0.5s ease-out;
-}
-
-@keyframes slideDown {
-  from {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
 }
 
 .header-content {
@@ -53,12 +40,6 @@
   justify-content: center;
   color: white;
   font-size: 24px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.logo-icon:hover {
-  transform: rotate(10deg) scale(1.1);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
 .logo-section h1 {
@@ -66,10 +47,6 @@
   color: #2d3748;
   font-size: 24px;
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .header-actions {
@@ -95,23 +72,6 @@
   align-items: center;
   gap: 8px;
   text-decoration: none;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.btn:hover::before {
-  left: 100%;
 }
 
 .btn-primary {
@@ -133,8 +93,6 @@
 .btn-outline:hover {
   background: #667eea;
   color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 15px rgba(102, 126, 234, 0.3);
 }
 
 .btn-small {
@@ -152,18 +110,6 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
-  animation: fadeIn 0.8s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* Hero Section */
@@ -171,18 +117,6 @@
   text-align: center;
   margin-bottom: 60px;
   color: white;
-  animation: fadeInUp 1s ease-out;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .hero-content h2 {
@@ -190,19 +124,6 @@
   font-weight: 700;
   margin: 0 0 20px 0;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.02);
-  }
-  100% {
-    transform: scale(1);
-  }
 }
 
 .hero-content p {
@@ -219,7 +140,6 @@
   border-radius: 20px;
   padding: 40px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 1s ease-out 0.3s both;
 }
 
 .section-header {
@@ -232,20 +152,6 @@
   font-weight: 700;
   color: #2d3748;
   margin: 0 0 15px 0;
-  position: relative;
-  display: inline-block;
-}
-
-.section-header h3::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 4px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 2px;
 }
 
 .section-header p {
@@ -267,19 +173,10 @@
   padding: 25px;
   transition: all 0.3s ease;
   border: 2px solid transparent;
-  animation: fadeInUp 0.5s ease-out;
-  animation-fill-mode: both;
 }
 
-.course-card:nth-child(1) { animation-delay: 0.1s; }
-.course-card:nth-child(2) { animation-delay: 0.2s; }
-.course-card:nth-child(3) { animation-delay: 0.3s; }
-.course-card:nth-child(4) { animation-delay: 0.4s; }
-.course-card:nth-child(5) { animation-delay: 0.5s; }
-.course-card:nth-child(6) { animation-delay: 0.6s; }
-
 .course-card:hover {
-  transform: translateY(-5px) scale(1.02);
+  transform: translateY(-5px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   border-color: #667eea;
 }
@@ -295,11 +192,6 @@
   color: white;
   font-size: 24px;
   margin-bottom: 20px;
-  transition: transform 0.3s ease;
-}
-
-.course-card:hover .course-image {
-  transform: rotate(15deg) scale(1.1);
 }
 
 .course-content h4 {
@@ -331,11 +223,6 @@
 
 .meta-item i {
   color: #667eea;
-  transition: transform 0.3s ease;
-}
-
-.meta-item:hover i {
-  transform: scale(1.2);
 }
 
 .course-actions {
@@ -351,7 +238,6 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
   max-width: 1000px;
   margin: 0 auto;
-  animation: fadeIn 0.5s ease-out;
 }
 
 .details-header {
@@ -369,15 +255,11 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 20px;
-  transition: all 0.3s ease;
-  padding: 8px 16px;
-  border-radius: 8px;
+  transition: color 0.3s ease;
 }
 
 .back-btn:hover {
   color: #5a67d8;
-  background-color: #f8fafc;
-  transform: translateX(-5px);
 }
 
 .details-header h2 {
@@ -385,20 +267,6 @@
   font-weight: 700;
   color: #2d3748;
   margin: 0 0 15px 0;
-  position: relative;
-  display: inline-block;
-}
-
-.details-header h2::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 2px;
 }
 
 .details-header p {
@@ -428,22 +296,11 @@
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  transition: all 0.3s ease;
-}
-
-.info-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .info-item i {
   font-size: 24px;
   color: #667eea;
-  transition: transform 0.3s ease;
-}
-
-.info-item:hover i {
-  transform: scale(1.2);
 }
 
 .info-item span {
@@ -461,19 +318,6 @@
   font-weight: 600;
   color: #2d3748;
   margin: 0 0 20px 0;
-  position: relative;
-  display: inline-block;
-}
-
-.modules-section h3::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 0;
-  width: 40px;
-  height: 3px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 2px;
 }
 
 .modules-list {
@@ -487,31 +331,6 @@
   border-radius: 12px;
   padding: 20px;
   border-left: 4px solid #667eea;
-  transition: all 0.3s ease;
-  animation: slideInRight 0.5s ease-out;
-  animation-fill-mode: both;
-}
-
-.module-item:nth-child(1) { animation-delay: 0.1s; }
-.module-item:nth-child(2) { animation-delay: 0.2s; }
-.module-item:nth-child(3) { animation-delay: 0.3s; }
-.module-item:nth-child(4) { animation-delay: 0.4s; }
-.module-item:nth-child(5) { animation-delay: 0.5s; }
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.module-item:hover {
-  transform: translateX(5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .module-header {
@@ -532,12 +351,6 @@
   justify-content: center;
   font-weight: 600;
   font-size: 16px;
-  transition: all 0.3s ease;
-}
-
-.module-item:hover .module-number {
-  transform: scale(1.1);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .module-info h4 {
@@ -563,7 +376,6 @@
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
-  transition: all 0.3s ease;
 }
 
 .status-badge.active {
@@ -574,10 +386,6 @@
 .status-badge.inactive {
   background: #fed7d7;
   color: #c53030;
-}
-
-.module-item:hover .status-badge {
-  transform: scale(1.05);
 }
 
 .module-lessons {
@@ -591,16 +399,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.3s ease;
 }
 
 .lesson-count i {
   color: #667eea;
-}
-
-.module-item:hover .lesson-count {
-  color: #4a5568;
-  transform: translateX(-5px);
 }
 
 /* Enroll Section */
@@ -610,7 +412,6 @@
   padding: 40px;
   text-align: center;
   color: white;
-  animation: pulse 2s infinite;
 }
 
 .enroll-content h3 {
@@ -632,7 +433,6 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  animation: fadeIn 0.5s ease-out;
 }
 
 .error-content {
@@ -649,13 +449,6 @@
   font-size: 64px;
   color: #e53e3e;
   margin-bottom: 20px;
-  animation: shake 0.5s ease-in-out;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-5px); }
-  40%, 80% { transform: translateX(5px); }
 }
 
 .error-content h3 {
@@ -677,14 +470,12 @@
   padding: 60px 20px;
   color: #718096;
   grid-column: 1 / -1;
-  animation: fadeIn 0.5s ease-out;
 }
 
 .no-courses i {
   font-size: 64px;
   color: #cbd5e0;
   margin-bottom: 20px;
-  animation: pulse 2s infinite;
 }
 
 .no-courses h3 {
@@ -710,19 +501,12 @@
   justify-content: center;
   padding: 60px 20px;
   color: #667eea;
-  animation: fadeIn 0.5s ease-out;
 }
 
 .loading-spinner i,
 .loading-modules i {
   font-size: 48px;
   margin-bottom: 20px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 
 .loading-spinner p,
@@ -768,69 +552,4 @@
   .module-status {
     margin-left: 0;
   }
-  
-  .logo-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-  }
-  
-  .logo-section h1 {
-    font-size: 20px;
-  }
-}
-
-/* Custom Icon Animations */
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-10px);
-  }
-  60% {
-    transform: translateY(-5px);
-  }
-}
-
-.fa-graduation-cap {
-  animation: bounce 2s infinite;
-}
-
-.fa-book {
-  animation: pulse 2s infinite;
-}
-
-.fa-layer-group, .fa-clock, .fa-users {
-  transition: transform 0.3s ease;
-}
-
-.meta-item:hover .fa-layer-group,
-.meta-item:hover .fa-clock,
-.info-item:hover .fa-layer-group,
-.info-item:hover .fa-clock,
-.info-item:hover .fa-users {
-  animation: bounce 0.5s;
-}
-
-/* Enhanced Icons with Gradient */
-.icon-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Floating Animation */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.course-card:hover .course-image {
-  animation: float 2s ease-in-out infinite;
 }

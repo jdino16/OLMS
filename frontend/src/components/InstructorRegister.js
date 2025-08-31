@@ -16,20 +16,10 @@ const InstructorRegister = ({ onBackToLogin }) => {
     address: ''
   });
   const [loading, setLoading] = useState(false);
+
   const [success, setSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [fieldFocus, setFieldFocus] = useState({
-    username: false,
-    instructor_name: false,
-    password: false,
-    confirmPassword: false,
-    dob: false,
-    gender: false,
-    phone_number: false,
-    email: false,
-    address: false
-  });
 
   const handleChange = (e) => {
     setFormData({
@@ -44,20 +34,6 @@ const InstructorRegister = ({ onBackToLogin }) => {
     } else {
       setShowConfirmPassword(!showConfirmPassword);
     }
-  };
-
-  const handleFocus = (field) => {
-    setFieldFocus({
-      ...fieldFocus,
-      [field]: true
-    });
-  };
-
-  const handleBlur = (field) => {
-    setFieldFocus({
-      ...fieldFocus,
-      [field]: false
-    });
   };
 
   const validateForm = () => {
@@ -158,13 +134,11 @@ const InstructorRegister = ({ onBackToLogin }) => {
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  onFocus={() => handleFocus('username')}
-                  onBlur={() => handleBlur('username')}
                   className="form-control"
                   placeholder="Enter username"
                   required
                 />
-                <div className={`input-icon ${fieldFocus.username ? 'focused' : ''}`}>
+                <div className="input-icon">
                   <i className="fas fa-user"></i>
                 </div>
               </div>
@@ -179,13 +153,11 @@ const InstructorRegister = ({ onBackToLogin }) => {
                   name="instructor_name"
                   value={formData.instructor_name}
                   onChange={handleChange}
-                  onFocus={() => handleFocus('instructor_name')}
-                  onBlur={() => handleBlur('instructor_name')}
                   className="form-control"
                   placeholder="Enter full name"
                   required
                 />
-                <div className={`input-icon ${fieldFocus.instructor_name ? 'focused' : ''}`}>
+                <div className="input-icon">
                   <i className="fas fa-id-card"></i>
                 </div>
               </div>
@@ -202,13 +174,11 @@ const InstructorRegister = ({ onBackToLogin }) => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  onFocus={() => handleFocus('password')}
-                  onBlur={() => handleBlur('password')}
                   className="form-control"
                   placeholder="Enter password"
                   required
                 />
-                <div className={`input-icon ${fieldFocus.password ? 'focused' : ''}`}>
+                <div className="input-icon">
                   <i className="fas fa-lock"></i>
                 </div>
                 <button
@@ -231,13 +201,11 @@ const InstructorRegister = ({ onBackToLogin }) => {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  onFocus={() => handleFocus('confirmPassword')}
-                  onBlur={() => handleBlur('confirmPassword')}
                   className="form-control"
                   placeholder="Confirm password"
                   required
                 />
-                <div className={`input-icon ${fieldFocus.confirmPassword ? 'focused' : ''}`}>
+                <div className="input-icon">
                   <i className="fas fa-lock"></i>
                 </div>
                 <button
@@ -262,12 +230,10 @@ const InstructorRegister = ({ onBackToLogin }) => {
                   name="dob"
                   value={formData.dob}
                   onChange={handleChange}
-                  onFocus={() => handleFocus('dob')}
-                  onBlur={() => handleBlur('dob')}
                   className="form-control"
                   required
                 />
-                <div className={`input-icon ${fieldFocus.dob ? 'focused' : ''}`}>
+                <div className="input-icon">
                   <i className="fas fa-calendar"></i>
                 </div>
               </div>
@@ -281,8 +247,6 @@ const InstructorRegister = ({ onBackToLogin }) => {
                   name="gender"
                   value={formData.gender}
                   onChange={handleChange}
-                  onFocus={() => handleFocus('gender')}
-                  onBlur={() => handleBlur('gender')}
                   className="form-control"
                   required
                 >
@@ -291,7 +255,7 @@ const InstructorRegister = ({ onBackToLogin }) => {
                   <option value="Female">Female</option>
                   <option value="Other">Other</option>
                 </select>
-                <div className={`input-icon ${fieldFocus.gender ? 'focused' : ''}`}>
+                <div className="input-icon">
                   <i className="fas fa-venus-mars"></i>
                 </div>
               </div>
@@ -308,13 +272,11 @@ const InstructorRegister = ({ onBackToLogin }) => {
                   name="phone_number"
                   value={formData.phone_number}
                   onChange={handleChange}
-                  onFocus={() => handleFocus('phone_number')}
-                  onBlur={() => handleBlur('phone_number')}
                   className="form-control"
                   placeholder="Enter phone number"
                   required
                 />
-                <div className={`input-icon ${fieldFocus.phone_number ? 'focused' : ''}`}>
+                <div className="input-icon">
                   <i className="fas fa-phone"></i>
                 </div>
               </div>
@@ -329,12 +291,10 @@ const InstructorRegister = ({ onBackToLogin }) => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  onFocus={() => handleFocus('email')}
-                  onBlur={() => handleBlur('email')}
                   className="form-control"
                   placeholder="Enter email (optional)"
                 />
-                <div className={`input-icon ${fieldFocus.email ? 'focused' : ''}`}>
+                <div className="input-icon">
                   <i className="fas fa-envelope"></i>
                 </div>
               </div>
@@ -349,17 +309,17 @@ const InstructorRegister = ({ onBackToLogin }) => {
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
-                onFocus={() => handleFocus('address')}
-                onBlur={() => handleBlur('address')}
                 className="form-control"
                 placeholder="Enter address (optional)"
                 rows="3"
               ></textarea>
-              <div className={`input-icon ${fieldFocus.address ? 'focused' : ''}`}>
+              <div className="input-icon">
                 <i className="fas fa-map-marker-alt"></i>
               </div>
             </div>
           </div>
+          
+
 
           {success && (
             <div className="success-message">

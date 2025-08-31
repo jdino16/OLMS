@@ -8,16 +8,10 @@ const PendingInstructors = ({ onCountUpdate }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [toast, setToast] = useState({ show: false, message: '', type: '' });
 
   useEffect(() => {
     fetchPendingInstructors();
   }, []);
-
-  const showToast = (message, type = 'success') => {
-    setToast({ show: true, message, type });
-    setTimeout(() => setToast({ show: false, message: '', type: '' }), 3000);
-  };
 
   const fetchPendingInstructors = async () => {
     try {
@@ -27,7 +21,6 @@ const PendingInstructors = ({ onCountUpdate }) => {
       const errorMsg = error.response?.data?.error || 'Failed to fetch pending instructors';
       setError(errorMsg);
       showAlert.error(errorMsg);
-      showToast(errorMsg, 'error');
       console.error('Error fetching pending instructors:', error);
     } finally {
       setLoading(false);
@@ -41,7 +34,6 @@ const PendingInstructors = ({ onCountUpdate }) => {
         const successMsg = 'Instructor approved successfully!';
         setSuccess(successMsg);
         showAlert.success(successMsg);
-        showToast(successMsg);
         // Remove from pending list
         setPendingInstructors(prev => prev.filter(instructor => instructor.id !== instructorId));
         // Update the pending count
@@ -52,7 +44,6 @@ const PendingInstructors = ({ onCountUpdate }) => {
       const errorMsg = error.response?.data?.error || 'Failed to approve instructor';
       setError(errorMsg);
       showAlert.error(errorMsg);
-      showToast(errorMsg, 'error');
       console.error('Error approving instructor:', error);
     }
   };
@@ -64,7 +55,6 @@ const PendingInstructors = ({ onCountUpdate }) => {
         const successMsg = 'Instructor rejected successfully!';
         setSuccess(successMsg);
         showAlert.success(successMsg);
-        showToast(successMsg);
         // Remove from pending list
         setPendingInstructors(prev => prev.filter(instructor => instructor.id !== instructorId));
         // Update the pending count
@@ -75,17 +65,12 @@ const PendingInstructors = ({ onCountUpdate }) => {
       const errorMsg = error.response?.data?.error || 'Failed to reject instructor';
       setError(errorMsg);
       showAlert.error(errorMsg);
-      showToast(errorMsg, 'error');
       console.error('Error rejecting instructor:', error);
     }
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    return new Date(dateString).toLocaleDateString();
   };
 
   if (loading) {
@@ -102,10 +87,7 @@ const PendingInstructors = ({ onCountUpdate }) => {
   return (
     <div className="pending-instructors-container">
       <div className="pending-instructors-header">
-        <h2>
-          <i className="fas fa-user-check me-2"></i>
-          Pending Instructor Approvals
-        </h2>
+        <h2>Pending Instructor Approvals</h2>
         <p>Review and approve new instructor registrations</p>
       </div>
 
@@ -123,13 +105,6 @@ const PendingInstructors = ({ onCountUpdate }) => {
         </div>
       )}
 
-      {toast.show && (
-        <div className={`toast toast-${toast.type}`}>
-          <i className={`fas ${toast.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`}></i>
-          {toast.message}
-        </div>
-      )}
-
       {pendingInstructors.length === 0 ? (
         <div className="no-pending">
           <i className="fas fa-check-circle"></i>
@@ -142,16 +117,12 @@ const PendingInstructors = ({ onCountUpdate }) => {
             <div key={instructor.id} className="instructor-card">
               <div className="instructor-header">
                 <div className="instructor-avatar">
-                  <i className="fas fa-user-graduate"></i>
+                  <i className="fas fa-user"></i>
                 </div>
                 <div className="instructor-info">
                   <h3>{instructor.instructor_name}</h3>
-                  <p className="username">
-                    <i className="fas fa-at"></i>
-                    @{instructor.username}
-                  </p>
+                  <p className="username">@{instructor.username}</p>
                   <p className="registration-date">
-                    <i className="fas fa-calendar-alt"></i>
                     Registered: {formatDate(instructor.created_at)}
                   </p>
                 </div>
@@ -159,41 +130,26 @@ const PendingInstructors = ({ onCountUpdate }) => {
 
               <div className="instructor-details">
                 <div className="detail-row">
-                  <span className="label">
-                    <i className="fas fa-venus-mars"></i>
-                    Gender:
-                  </span>
+                  <span className="label">Gender:</span>
                   <span className="value">{instructor.gender}</span>
                 </div>
                 <div className="detail-row">
-                  <span className="label">
-                    <i className="fas fa-birthday-cake"></i>
-                    Date of Birth:
-                  </span>
+                  <span className="label">Date of Birth:</span>
                   <span className="value">{formatDate(instructor.dob)}</span>
                 </div>
                 <div className="detail-row">
-                  <span className="label">
-                    <i className="fas fa-phone"></i>
-                    Phone:
-                  </span>
+                  <span className="label">Phone:</span>
                   <span className="value">{instructor.phone_number}</span>
                 </div>
                 {instructor.email && (
                   <div className="detail-row">
-                    <span className="label">
-                      <i className="fas fa-envelope"></i>
-                      Email:
-                    </span>
+                    <span className="label">Email:</span>
                     <span className="value">{instructor.email}</span>
                   </div>
                 )}
                 {instructor.address && (
                   <div className="detail-row">
-                    <span className="label">
-                      <i className="fas fa-map-marker-alt"></i>
-                      Address:
-                    </span>
+                    <span className="label">Address:</span>
                     <span className="value">{instructor.address}</span>
                   </div>
                 )}

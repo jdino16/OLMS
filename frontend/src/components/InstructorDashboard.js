@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './InstructorDashboard.css';
 import InstructorFeedbackDashboard from './InstructorFeedbackDashboard';
+import InstructorCourseManager from './InstructorCourseManager';
+import StudentProgressAnalytics from './StudentProgressAnalytics';
 
 const InstructorDashboard = ({ instructor, onLogout }) => {
   const [activePage, setActivePage] = useState('overview');
@@ -553,6 +555,10 @@ const InstructorDashboard = ({ instructor, onLogout }) => {
           fetchStudents();
         }
         return renderStudents();
+      case 'courses':
+        return <InstructorCourseManager instructor={instructor} />;
+      case 'analytics':
+        return <StudentProgressAnalytics instructor={instructor} />;
       case 'modules':
         return renderModules();
       case 'feedback':
@@ -603,6 +609,22 @@ const InstructorDashboard = ({ instructor, onLogout }) => {
             >
               <i className="fas fa-users"></i>
               <span>My Students</span>
+            </button>
+            
+            <button
+              className={`nav-item ${activePage === 'courses' ? 'active' : ''}`}
+              onClick={() => handlePageChange('courses')}
+            >
+              <i className="fas fa-book"></i>
+              <span>My Courses</span>
+            </button>
+            
+            <button
+              className={`nav-item ${activePage === 'analytics' ? 'active' : ''}`}
+              onClick={() => handlePageChange('analytics')}
+            >
+              <i className="fas fa-chart-line"></i>
+              <span>Analytics</span>
             </button>
             
             <button

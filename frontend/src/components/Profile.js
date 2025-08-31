@@ -1,4 +1,3 @@
-// Profile.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import './Profile.css';
@@ -9,9 +8,6 @@ const Profile = ({ admin }) => {
     new_password: '',
     confirm_password: ''
   });
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -22,16 +18,6 @@ const Profile = ({ admin }) => {
       ...prev,
       [name]: value
     }));
-  };
-
-  const togglePasswordVisibility = (field) => {
-    if (field === 'current') {
-      setShowCurrentPassword(!showCurrentPassword);
-    } else if (field === 'new') {
-      setShowNewPassword(!showNewPassword);
-    } else if (field === 'confirm') {
-      setShowConfirmPassword(!showConfirmPassword);
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -64,11 +50,6 @@ const Profile = ({ admin }) => {
           new_password: '',
           confirm_password: ''
         });
-        
-        // Reset visibility states
-        setShowCurrentPassword(false);
-        setShowNewPassword(false);
-        setShowConfirmPassword(false);
       }
     } catch (error) {
       setError(error.response?.data?.error || 'Failed to update password');
@@ -80,10 +61,7 @@ const Profile = ({ admin }) => {
   return (
     <div className="profile-container">
       <div className="page-header">
-        <h2>
-          <i className="fas fa-user-cog"></i>
-          Profile Settings
-        </h2>
+        <h2>Profile Settings</h2>
       </div>
 
       <div className="profile-content">
@@ -94,18 +72,12 @@ const Profile = ({ admin }) => {
             </div>
             <div className="profile-info">
               <h3>{admin?.username}</h3>
-              <p>
-                <i className="fas fa-shield-alt"></i>
-                Administrator
-              </p>
+              <p>Administrator</p>
             </div>
           </div>
 
           <div className="profile-section">
-            <h4>
-              <i className="fas fa-key"></i>
-              Change Password
-            </h4>
+            <h4>Change Password</h4>
             <p className="section-description">
               Update your password to keep your account secure.
             </p>
@@ -126,32 +98,22 @@ const Profile = ({ admin }) => {
 
             <form onSubmit={handleSubmit} className="password-form">
               <div className="form-group">
-                <label>
-                  <i className="fas fa-lock"></i>
-                  Current Password *
-                </label>
+                <label>Current Password *</label>
                 <input
-                  type={showCurrentPassword ? "text" : "password"}
+                  type="password"
                   name="current_password"
                   value={formData.current_password}
                   onChange={handleInputChange}
                   required
                   placeholder="Enter current password"
                 />
-                <i 
-                  className={`fas ${showCurrentPassword ? 'fa-eye-slash' : 'fa-eye'}`}
-                  onClick={() => togglePasswordVisibility('current')}
-                ></i>
               </div>
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>
-                    <i className="fas fa-key"></i>
-                    New Password *
-                  </label>
+                  <label>New Password *</label>
                   <input
-                    type={showNewPassword ? "text" : "password"}
+                    type="password"
                     name="new_password"
                     value={formData.new_password}
                     onChange={handleInputChange}
@@ -159,18 +121,11 @@ const Profile = ({ admin }) => {
                     placeholder="Enter new password"
                     minLength="6"
                   />
-                  <i 
-                    className={`fas ${showNewPassword ? 'fa-eye-slash' : 'fa-eye'}`}
-                    onClick={() => togglePasswordVisibility('new')}
-                  ></i>
                 </div>
                 <div className="form-group">
-                  <label>
-                    <i className="fas fa-key"></i>
-                    Confirm New Password *
-                  </label>
+                  <label>Confirm New Password *</label>
                   <input
-                    type={showConfirmPassword ? "text" : "password"}
+                    type="password"
                     name="confirm_password"
                     value={formData.confirm_password}
                     onChange={handleInputChange}
@@ -178,18 +133,11 @@ const Profile = ({ admin }) => {
                     placeholder="Confirm new password"
                     minLength="6"
                   />
-                  <i 
-                    className={`fas ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'}`}
-                    onClick={() => togglePasswordVisibility('confirm')}
-                  ></i>
                 </div>
               </div>
 
               <div className="password-requirements">
-                <h5>
-                  <i className="fas fa-info-circle"></i>
-                  Password Requirements:
-                </h5>
+                <h5>Password Requirements:</h5>
                 <ul>
                   <li>At least 6 characters long</li>
                   <li>Should be different from current password</li>
@@ -222,38 +170,23 @@ const Profile = ({ admin }) => {
 
         <div className="profile-sidebar">
           <div className="info-card">
-            <h4>
-              <i className="fas fa-info-circle"></i>
-              Account Information
-            </h4>
+            <h4>Account Information</h4>
             <div className="info-item">
-              <span className="info-label">
-                <i className="fas fa-user"></i>
-                Username:
-              </span>
+              <span className="info-label">Username:</span>
               <span className="info-value">{admin?.username}</span>
             </div>
             <div className="info-item">
-              <span className="info-label">
-                <i className="fas fa-user-tag"></i>
-                Role:
-              </span>
+              <span className="info-label">Role:</span>
               <span className="info-value">Administrator</span>
             </div>
             <div className="info-item">
-              <span className="info-label">
-                <i className="fas fa-circle"></i>
-                Status:
-              </span>
+              <span className="info-label">Status:</span>
               <span className="info-value status-active">Active</span>
             </div>
           </div>
 
           <div className="info-card">
-            <h4>
-              <i className="fas fa-shield-alt"></i>
-              Security Tips
-            </h4>
+            <h4>Security Tips</h4>
             <ul className="security-tips">
               <li>Use a strong, unique password</li>
               <li>Never share your credentials</li>
