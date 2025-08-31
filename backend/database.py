@@ -1,5 +1,7 @@
 import pymysql
 import hashlib
+import json
+import uuid
 from datetime import datetime
 
 class Database:
@@ -246,6 +248,30 @@ class Database:
                     )
                 """)
 
+                # Create course progress table
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS course_progress (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        student_id INT NOT NULL,
+                        course_id INT NOT NULL,
+                        progress_percentage DECIMAL(5,2) DEFAULT 0.00 COMMENT 'Progress percentage (0-100)',
+                        completed_modules INT DEFAULT 0 COMMENT 'Number of completed modules',
+                        total_modules INT DEFAULT 0 COMMENT 'Total modules in course',
+                        study_time INT DEFAULT 0 COMMENT 'Total study time in minutes',
+                        status ENUM('Active', 'Completed', 'Inactive', 'Dropped') DEFAULT 'Active',
+                        last_accessed TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                        UNIQUE KEY unique_student_course (student_id, course_id),
+                        INDEX idx_student (student_id),
+                        INDEX idx_course (course_id),
+                        INDEX idx_progress (progress_percentage),
+                        INDEX idx_status (status),
+                        FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+                        FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+                    )
+                """)
+
                 # Create feedback table
                 cursor.execute("""
                     CREATE TABLE IF NOT EXISTS feedback (
@@ -265,6 +291,30 @@ class Database:
                         INDEX idx_category (category),
                         UNIQUE KEY unique_feedback (student_id, feedback_type, target_id),
                         FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
+                    )
+                """)
+
+                # Create certificates table
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS certificates (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        student_id INT NOT NULL,
+                        course_id INT NOT NULL,
+                        certificate_id VARCHAR(50) UNIQUE NOT NULL COMMENT 'Unique certificate identifier',
+                        completion_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        final_score DECIMAL(5,2) DEFAULT 0.00 COMMENT 'Final course score (0-100)',
+                        certificate_data JSON COMMENT 'Certificate template and data',
+                        pdf_path VARCHAR(500) COMMENT 'Path to generated PDF file',
+                        status ENUM('Generated', 'Downloaded', 'Expired') DEFAULT 'Generated',
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                        UNIQUE KEY unique_student_course (student_id, course_id),
+                        INDEX idx_student (student_id),
+                        INDEX idx_course (course_id),
+                        INDEX idx_certificate_id (certificate_id),
+                        INDEX idx_status (status),
+                        FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+                        FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
                     )
                 """)
 
@@ -296,6 +346,12 @@ class Database:
                     if not cursor.fetchone():
                         cursor.execute("ALTER TABLE lessons ADD COLUMN total_slides INT DEFAULT 10")
                         print("Added total_slides column to lessons table")
+                    
+                    # Check if students table has last_login column
+                    cursor.execute("SHOW COLUMNS FROM students LIKE 'last_login'")
+                    if not cursor.fetchone():
+                        cursor.execute("ALTER TABLE students ADD COLUMN last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+                        print("Added last_login column to students table")
                     
                     conn.commit()
                 except Exception as e:
@@ -532,16 +588,26 @@ class Database:
         with self.get_connection() as conn:
             with conn.cursor() as cursor:
                
-                cursor.execute("SELECT COUNT(*) as total_courses FROM courses")
+                cursor.execute("SELECT COUNT(*) as total_courses FROM courses WHERE instructor_id = %s", (instructor_id,))
                 total_courses = cursor.fetchone()['total_courses']
                 
-                cursor.execute("SELECT COUNT(*) as total_students FROM students")
+                cursor.execute("""
+                    SELECT COUNT(DISTINCT ce.student_id) as total_students 
+                    FROM course_enrollments ce
+                    JOIN courses c ON ce.course_id = c.id
+                    WHERE c.instructor_id = %s
+                """, (instructor_id,))
                 total_students = cursor.fetchone()['total_students']
                 
-                cursor.execute("SELECT COUNT(*) as total_modules FROM modules")
+                cursor.execute("""
+                    SELECT COUNT(*) as total_modules 
+                    FROM modules m
+                    JOIN courses c ON m.course_id = c.id
+                    WHERE c.instructor_id = %s
+                """, (instructor_id,))
                 total_modules = cursor.fetchone()['total_modules']
                 
-                cursor.execute("SELECT COUNT(*) as active_courses FROM courses WHERE status = 'Active'")
+                cursor.execute("SELECT COUNT(*) as active_courses FROM courses WHERE instructor_id = %s AND status = 'Active'", (instructor_id,))
                 active_courses = cursor.fetchone()['active_courses']
                 
                 return {
@@ -550,6 +616,33 @@ class Database:
                     'totalModules': total_modules,
                     'activeCourses': active_courses
                 }
+
+    def get_instructor_modules(self, instructor_id):
+        """Get modules for an instructor's courses"""
+        with self.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT m.*, c.course_name, c.level, c.status as course_status
+                    FROM modules m
+                    JOIN courses c ON m.course_id = c.id
+                    WHERE c.instructor_id = %s OR c.instructor_id IS NULL
+                    ORDER BY c.course_name, m.module_name
+                """, (instructor_id,))
+                return cursor.fetchall()
+
+    def get_instructor_courses(self, instructor_id):
+        """Get courses created by an instructor"""
+        with self.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT c.*, 
+                           (SELECT COUNT(*) FROM modules WHERE course_id = c.id) as module_count,
+                           (SELECT COUNT(*) FROM course_enrollments WHERE course_id = c.id) as student_count
+                    FROM courses c
+                    WHERE c.instructor_id = %s
+                    ORDER BY c.created_at DESC
+                """, (instructor_id,))
+                return cursor.fetchall()
 
     # Student CRUD operations
     def get_all_students(self):
@@ -650,6 +743,11 @@ class Database:
                 student = cursor.fetchone()
                 
                 if student and self.verify_password(password, student['password']):
+                    # Update last_login timestamp
+                    cursor.execute("""
+                        UPDATE students SET last_login = NOW() WHERE id = %s
+                    """, (student['id'],))
+                    conn.commit()
                     return student
                 return None
 
@@ -1090,9 +1188,9 @@ class Database:
                     LEFT JOIN courses c ON f.feedback_type = 'course' AND f.target_id = c.id
                     LEFT JOIN lessons l ON f.feedback_type = 'lesson' AND f.target_id = l.id
                     LEFT JOIN modules m ON l.module_id = m.id
-                    WHERE c.instructor_id = %s
+                    WHERE 1=1
                 """
-                params = [instructor_id]
+                params = []
                 
                 if feedback_type:
                     query += " AND f.feedback_type = %s"
@@ -1128,9 +1226,7 @@ class Database:
                         COUNT(CASE WHEN rating <= 2 THEN 1 END) as negative_feedback,
                         COUNT(CASE WHEN rating = 3 THEN 1 END) as neutral_feedback
                     FROM feedback f
-                    JOIN courses c ON f.feedback_type = 'course' AND f.target_id = c.id
-                    WHERE c.instructor_id = %s
-                """, (instructor_id,))
+                """)
                 overall_stats = cursor.fetchone()
                 
                 # Feedback by category
@@ -1142,11 +1238,9 @@ class Database:
                         COUNT(CASE WHEN f.rating >= 4 THEN 1 END) as positive_count,
                         COUNT(CASE WHEN f.rating <= 2 THEN 1 END) as negative_count
                     FROM feedback f
-                    JOIN courses c ON f.feedback_type = 'course' AND f.target_id = c.id
-                    WHERE c.instructor_id = %s
                     GROUP BY f.category
                     ORDER BY count DESC
-                """, (instructor_id,))
+                """)
                 category_stats = cursor.fetchall()
                 
                 # Feedback by course
@@ -1160,10 +1254,9 @@ class Database:
                         COUNT(CASE WHEN f.rating <= 2 THEN 1 END) as negative_count
                     FROM courses c
                     LEFT JOIN feedback f ON f.feedback_type = 'course' AND f.target_id = c.id
-                    WHERE c.instructor_id = %s
                     GROUP BY c.id, c.course_name
                     ORDER BY feedback_count DESC
-                """, (instructor_id,))
+                """)
                 course_stats = cursor.fetchall()
                 
                 # Recent feedback with student details
@@ -1209,6 +1302,9 @@ class Database:
         """Get feedback summary for instructor's courses"""
         with self.get_connection() as conn:
             with conn.cursor() as cursor:
+                # Since courses table doesn't have instructor_id, we'll get all feedback
+                # and provide general summary statistics
+                
                 # Get summary by month for the last 12 months
                 cursor.execute("""
                     SELECT 
@@ -1217,15 +1313,13 @@ class Database:
                         AVG(f.rating) as avg_rating,
                         COUNT(CASE WHEN f.rating >= 4 THEN 1 END) as positive_count
                     FROM feedback f
-                    JOIN courses c ON f.feedback_type = 'course' AND f.target_id = c.id
-                    WHERE c.instructor_id = %s 
-                    AND f.created_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+                    WHERE f.created_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
                     GROUP BY DATE_FORMAT(f.created_at, '%Y-%m')
                     ORDER BY month DESC
-                """, (instructor_id,))
+                """)
                 monthly_trends = cursor.fetchall()
                 
-                # Get top performing courses
+                # Get top performing courses (all courses with feedback)
                 cursor.execute("""
                     SELECT 
                         c.course_name,
@@ -1233,12 +1327,11 @@ class Database:
                         COUNT(f.id) as feedback_count
                     FROM courses c
                     LEFT JOIN feedback f ON f.feedback_type = 'course' AND f.target_id = c.id
-                    WHERE c.instructor_id = %s
                     GROUP BY c.id, c.course_name
                     HAVING feedback_count > 0
                     ORDER BY avg_rating DESC
                     LIMIT 5
-                """, (instructor_id,))
+                """)
                 top_courses = cursor.fetchall()
                 
                 # Get areas for improvement
@@ -1248,12 +1341,10 @@ class Database:
                         AVG(f.rating) as avg_rating,
                         COUNT(*) as feedback_count
                     FROM feedback f
-                    JOIN courses c ON f.feedback_type = 'course' AND f.target_id = c.id
-                    WHERE c.instructor_id = %s
                     GROUP BY f.category
                     HAVING avg_rating < 4.0
                     ORDER BY avg_rating ASC
-                """, (instructor_id,))
+                """)
                 improvement_areas = cursor.fetchall()
                 
                 return {
@@ -1286,9 +1377,8 @@ class Database:
                     LEFT JOIN courses c ON f.feedback_type = 'course' AND f.target_id = c.id
                     LEFT JOIN lessons l ON f.feedback_type = 'lesson' AND f.target_id = l.id
                     LEFT JOIN modules m ON l.module_id = m.id
-                    WHERE c.instructor_id = %s
                     ORDER BY f.created_at DESC
-                """, (instructor_id,))
+                """)
                 return cursor.fetchall()
 
     # Course CRUD operations
@@ -1915,3 +2005,437 @@ class Database:
                     WHERE m.id = %s
                 """, (message_id,))
                 return cursor.fetchone()
+
+    def get_student_progress_analytics(self, instructor_id, course_id=None, student_id=None, time_range='month'):
+        """Get comprehensive student progress analytics for an instructor"""
+        with self.get_connection() as conn:
+            with conn.cursor() as cursor:
+                # Base conditions for instructor's courses
+                course_condition = "AND c.instructor_id = %s"
+                course_params = [instructor_id]
+                
+                if course_id:
+                    course_condition += " AND c.id = %s"
+                    course_params.append(course_id)
+                
+                student_condition = ""
+                if student_id:
+                    student_condition = "AND s.id = %s"
+                    course_params.append(student_id)
+                
+                # Time range conditions
+                time_conditions = {
+                    'week': "AND ce.created_at >= DATE_SUB(NOW(), INTERVAL 1 WEEK)",
+                    'month': "AND ce.created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH)",
+                    'quarter': "AND ce.created_at >= DATE_SUB(NOW(), INTERVAL 3 MONTH)",
+                    'year': "AND ce.created_at >= DATE_SUB(NOW(), INTERVAL 1 YEAR)"
+                }
+                time_condition = time_conditions.get(time_range, time_conditions['month'])
+                
+                # Get overview statistics - Simplified to avoid complex window functions
+                cursor.execute(f"""
+                    SELECT 
+                        COUNT(DISTINCT s.id) as total_students,
+                        COUNT(DISTINCT CASE WHEN s.last_login >= DATE_SUB(NOW(), INTERVAL 7 DAY) THEN s.id END) as active_students,
+                        COALESCE(AVG(cp.progress_percentage), 0) as avg_progress,
+                        COALESCE(AVG(CASE WHEN cp.progress_percentage = 100 THEN 1 ELSE 0 END) * 100, 0) as completion_rate,
+                        0 as student_growth,
+                        CASE 
+                            WHEN COUNT(DISTINCT s.id) > 0 
+                            THEN (COUNT(DISTINCT CASE WHEN s.last_login >= DATE_SUB(NOW(), INTERVAL 7 DAY) THEN s.id END) / COUNT(DISTINCT s.id)) * 100
+                            ELSE 0 
+                        END as activity_rate,
+                        0 as progress_growth,
+                        0 as completion_growth
+                    FROM students s
+                    JOIN course_enrollments ce ON s.id = ce.student_id
+                    JOIN courses c ON ce.course_id = c.id
+                    LEFT JOIN course_progress cp ON s.id = cp.student_id AND c.id = cp.course_id
+                    WHERE 1=1 {course_condition} {student_condition} {time_condition}
+                """, course_params)
+                
+                overview = cursor.fetchone()
+                
+                # Get progress distribution - Fixed the CASE statement
+                cursor.execute(f"""
+                    SELECT 
+                        CASE 
+                            WHEN COALESCE(cp.progress_percentage, 0) >= 90 THEN '90-100'
+                            WHEN COALESCE(cp.progress_percentage, 0) >= 80 THEN '80-89'
+                            WHEN COALESCE(cp.progress_percentage, 0) >= 70 THEN '70-79'
+                            WHEN COALESCE(cp.progress_percentage, 0) >= 60 THEN '60-69'
+                            WHEN COALESCE(cp.progress_percentage, 0) >= 50 THEN '50-59'
+                            ELSE '0-49'
+                        END as progress_range,
+                        COUNT(*) as student_count
+                    FROM students s
+                    JOIN course_enrollments ce ON s.id = ce.student_id
+                    JOIN courses c ON ce.course_id = c.id
+                    LEFT JOIN course_progress cp ON s.id = cp.student_id AND c.id = cp.course_id
+                    WHERE 1=1 {course_condition} {student_condition} {time_condition}
+                    GROUP BY 
+                        CASE 
+                            WHEN COALESCE(cp.progress_percentage, 0) >= 90 THEN '90-100'
+                            WHEN COALESCE(cp.progress_percentage, 0) >= 80 THEN '80-89'
+                            WHEN COALESCE(cp.progress_percentage, 0) >= 70 THEN '70-79'
+                            WHEN COALESCE(cp.progress_percentage, 0) >= 60 THEN '60-69'
+                            WHEN COALESCE(cp.progress_percentage, 0) >= 50 THEN '50-59'
+                            ELSE '0-49'
+                        END
+                    ORDER BY 
+                        CASE progress_range
+                            WHEN '0-49' THEN 1
+                            WHEN '50-59' THEN 2
+                            WHEN '60-69' THEN 3
+                            WHEN '70-79' THEN 4
+                            WHEN '80-89' THEN 5
+                            WHEN '90-100' THEN 6
+                        END
+                """, course_params)
+                
+                progress_distribution = cursor.fetchall()
+                
+                # Get student performance details
+                cursor.execute(f"""
+                    SELECT 
+                        s.id,
+                        s.student_name,
+                        s.email,
+                        c.course_name,
+                        COALESCE(cp.progress_percentage, 0) as progress,
+                        COALESCE(qr.avg_score, 0) as quiz_score,
+                        COALESCE(ss.total_study_time, 0) as study_time,
+                        COALESCE(s.last_login, s.created_at) as last_activity,
+                        CASE 
+                            WHEN COALESCE(cp.progress_percentage, 0) = 100 THEN 'Completed'
+                            WHEN COALESCE(cp.progress_percentage, 0) >= 50 THEN 'Active'
+                            ELSE 'Inactive'
+                        END as status
+                    FROM students s
+                    JOIN course_enrollments ce ON s.id = ce.student_id
+                    JOIN courses c ON ce.course_id = c.id
+                    LEFT JOIN course_progress cp ON s.id = cp.student_id AND c.id = cp.course_id
+                    LEFT JOIN (
+                        SELECT student_id, AVG(score_percentage) as avg_score
+                        FROM quiz_results
+                        GROUP BY student_id
+                    ) qr ON s.id = qr.student_id
+                    LEFT JOIN (
+                        SELECT student_id, SUM(COALESCE(study_time, 0)) as total_study_time
+                        FROM study_sessions
+                        GROUP BY student_id
+                    ) ss ON s.id = ss.student_id
+                    WHERE 1=1 {course_condition} {student_condition} {time_condition}
+                    ORDER BY COALESCE(cp.progress_percentage, 0) DESC
+                """, course_params)
+                
+                student_performance = cursor.fetchall()
+                
+                # Get engagement metrics - Fixed division by zero and NULL handling
+                cursor.execute(f"""
+                    SELECT 
+                        COALESCE(AVG(ss.study_time), 0) as avg_session_duration,
+                        CASE 
+                            WHEN COUNT(DISTINCT s.id) > 0 
+                            THEN COALESCE(COUNT(ss.id) / COUNT(DISTINCT s.id), 0)
+                            ELSE 0 
+                        END as sessions_per_week,
+                        COALESCE(HOUR(ss.start_time), 'N/A') as peak_hour,
+                        COALESCE(AVG(cp.progress_percentage), 0) as avg_completion_rate,
+                        CASE 
+                            WHEN COUNT(DISTINCT s.id) > 0 
+                            THEN COALESCE((COUNT(DISTINCT qr.student_id) / COUNT(DISTINCT s.id)) * 100, 0)
+                            ELSE 0 
+                        END as quiz_participation,
+                        COALESCE(COUNT(DISTINCT f.student_id), 0) as feedback_submissions,
+                        COUNT(DISTINCT CASE WHEN COALESCE(cp.progress_percentage, 0) >= 80 THEN s.id END) as fast_learners,
+                        COUNT(DISTINCT CASE WHEN COALESCE(cp.progress_percentage, 0) BETWEEN 40 AND 79 THEN s.id END) as steady_pace,
+                        COUNT(DISTINCT CASE WHEN COALESCE(cp.progress_percentage, 0) < 40 THEN s.id END) as needs_support
+                    FROM students s
+                    JOIN course_enrollments ce ON s.id = ce.student_id
+                    JOIN courses c ON ce.course_id = c.id
+                    LEFT JOIN study_sessions ss ON s.id = ss.student_id
+                    LEFT JOIN course_progress cp ON s.id = cp.student_id AND c.id = cp.course_id
+                    LEFT JOIN quiz_results qr ON s.id = qr.student_id
+                    LEFT JOIN feedback f ON s.id = f.student_id
+                    WHERE 1=1 {course_condition} {student_condition} {time_condition}
+                """, course_params)
+                
+                engagement = cursor.fetchone()
+                
+                # Get course comparison data - Fixed division by zero
+                cursor.execute(f"""
+                    SELECT 
+                        c.id as course_id,
+                        c.course_name,
+                        COUNT(DISTINCT ce.student_id) as student_count,
+                        COALESCE(AVG(cp.progress_percentage), 0) as avg_progress,
+                        CASE 
+                            WHEN COUNT(DISTINCT ce.student_id) > 0 
+                            THEN COALESCE((COUNT(DISTINCT CASE WHEN cp.progress_percentage = 100 THEN ce.student_id END) / COUNT(DISTINCT ce.student_id)) * 100, 0)
+                            ELSE 0 
+                        END as completion_rate,
+                        COALESCE(AVG(qr.avg_score), 0) as avg_quiz_score,
+                        CASE 
+                            WHEN COALESCE(AVG(cp.progress_percentage), 0) >= 80 THEN 90
+                            WHEN COALESCE(AVG(cp.progress_percentage), 0) >= 60 THEN 70
+                            ELSE 50
+                        END as engagement_score
+                    FROM courses c
+                    LEFT JOIN course_enrollments ce ON c.id = ce.course_id
+                    LEFT JOIN course_progress cp ON c.id = cp.course_id AND ce.student_id = cp.student_id
+                    LEFT JOIN (
+                        SELECT student_id, course_id, AVG(score_percentage) as avg_score
+                        FROM quiz_results
+                        GROUP BY student_id, course_id
+                    ) qr ON c.id = qr.course_id AND ce.student_id = qr.student_id
+                    WHERE c.instructor_id = %s
+                    GROUP BY c.id, c.course_name
+                    ORDER BY COALESCE(AVG(cp.progress_percentage), 0) DESC
+                """, [instructor_id])
+                
+                course_comparison = cursor.fetchall()
+                
+                # Get available courses and students for filters
+                cursor.execute(f"""
+                    SELECT DISTINCT c.id, c.course_name
+                    FROM courses c
+                    WHERE c.instructor_id = %s
+                    ORDER BY c.course_name
+                """, [instructor_id])
+                
+                courses = cursor.fetchall()
+                
+                cursor.execute(f"""
+                    SELECT DISTINCT s.id, s.student_name
+                    FROM students s
+                    JOIN course_enrollments ce ON s.id = ce.student_id
+                    JOIN courses c ON ce.course_id = c.id
+                    WHERE c.instructor_id = %s
+                    ORDER BY s.student_name
+                """, [instructor_id])
+                
+                students = cursor.fetchall()
+                
+                # Generate actionable insights
+                insights = []
+                
+                # Low completion rate insight
+                if overview and overview.get('completion_rate', 0) < 60:
+                    insights.append({
+                        'priority': 'high',
+                        'icon': 'fa-exclamation-triangle',
+                        'title': 'Low Course Completion Rate',
+                        'description': f"Only {overview.get('completion_rate', 0):.1f}% of students are completing courses. Consider reviewing course difficulty and engagement strategies.",
+                        'actions': ['Review course content', 'Add interactive elements', 'Provide more support']
+                    })
+                
+                # Low engagement insight
+                if engagement and engagement.get('needs_support', 0) > 0:
+                    insights.append({
+                        'priority': 'medium',
+                        'icon': 'fa-users',
+                        'title': 'Students Need Additional Support',
+                        'description': f"{engagement.get('needs_support', 0)} students are struggling with course progress. Consider offering additional resources or one-on-one support.",
+                        'actions': ['Schedule office hours', 'Create study groups', 'Provide extra materials']
+                    })
+                
+                # High performance insight
+                if engagement and engagement.get('fast_learners', 0) > 0:
+                    insights.append({
+                        'priority': 'low',
+                        'icon': 'fa-star',
+                        'title': 'High-Performing Students',
+                        'description': f"{engagement.get('fast_learners', 0)} students are progressing quickly. Consider offering advanced materials or additional challenges.",
+                        'actions': ['Add advanced modules', 'Create bonus content', 'Offer mentorship opportunities']
+                    })
+                
+                # Quiz participation insight
+                if engagement and engagement.get('quiz_participation', 0) < 70:
+                    insights.append({
+                        'priority': 'medium',
+                        'icon': 'fa-question-circle',
+                        'title': 'Low Quiz Participation',
+                        'description': f"Only {engagement.get('quiz_participation', 0):.1f}% of students are taking quizzes. Consider making quizzes more engaging or mandatory.",
+                        'actions': ['Gamify quizzes', 'Add incentives', 'Make quizzes required']
+                    })
+                
+                # If no insights generated, add a default one
+                if not insights:
+                    insights.append({
+                        'priority': 'low',
+                        'icon': 'fa-info-circle',
+                        'title': 'Getting Started',
+                        'description': 'Welcome to your analytics dashboard! As you add more students and courses, you\'ll see personalized insights and recommendations here.',
+                        'actions': ['Add students', 'Create courses', 'Monitor progress']
+                    })
+                
+                return {
+                    'overview': overview or {
+                        'total_students': 0,
+                        'active_students': 0,
+                        'avg_progress': 0,
+                        'completion_rate': 0,
+                        'student_growth': 0,
+                        'activity_rate': 0,
+                        'progress_growth': 0,
+                        'completion_growth': 0
+                    },
+                    'progress_distribution': progress_distribution or [],
+                    'student_performance': student_performance or [],
+                    'engagement': engagement or {
+                        'avg_session_duration': 0,
+                        'sessions_per_week': 0,
+                        'peak_hour': 'N/A',
+                        'avg_completion_rate': 0,
+                        'quiz_participation': 0,
+                        'feedback_submissions': 0,
+                        'fast_learners': 0,
+                        'steady_pace': 0,
+                        'needs_support': 0
+                    },
+                    'course_comparison': course_comparison or [],
+                    'courses': courses or [],
+                    'students': students or [],
+                    'insights': insights
+                }
+
+    def get_student_certificates(self, student_id):
+        """Get all certificates for a student"""
+        with self.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT c.*, co.course_name, co.description, co.level
+                    FROM certificates c
+                    JOIN courses co ON c.course_id = co.id
+                    WHERE c.student_id = %s
+                    ORDER BY c.completion_date DESC
+                """, (student_id,))
+                return cursor.fetchall()
+
+    def get_completed_courses_for_certificates(self, student_id):
+        """Get completed courses that don't have certificates yet"""
+        with self.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT 
+                        ce.course_id as id,
+                        co.course_name,
+                        co.description,
+                        co.level,
+                        ce.progress_percentage as final_score,
+                        ce.updated_at as completion_date,
+                        CASE WHEN cert.id IS NOT NULL THEN 1 ELSE 0 END as has_certificate
+                    FROM course_enrollments ce
+                    JOIN courses co ON ce.course_id = co.id
+                    LEFT JOIN certificates cert ON ce.student_id = cert.student_id AND ce.course_id = cert.course_id
+                    WHERE ce.student_id = %s 
+                    AND ce.progress_percentage = 100
+                    ORDER BY ce.updated_at DESC
+                """, (student_id,))
+                return cursor.fetchall()
+
+    def generate_certificate(self, student_id, course_id):
+        """Generate a new certificate for a completed course"""
+        with self.get_connection() as conn:
+            with conn.cursor() as cursor:
+                try:
+                    print(f"Database: Generating certificate for student {student_id}, course {course_id}")
+                    
+                    # Check if course is completed
+                    cursor.execute("""
+                        SELECT ce.progress_percentage, co.course_name
+                        FROM course_enrollments ce
+                        JOIN courses co ON ce.course_id = co.id
+                        WHERE ce.student_id = %s AND ce.course_id = %s
+                    """, (student_id, course_id))
+                    
+                    result = cursor.fetchone()
+                    print(f"Database: Course check result: {result}")
+                    
+                    if not result:
+                        return False, "Course not found or not enrolled"
+                    
+                    if result['progress_percentage'] < 100:
+                        return False, "Course not completed (progress must be 100%)"
+                    
+                    # Check if certificate already exists
+                    cursor.execute("""
+                        SELECT id FROM certificates 
+                        WHERE student_id = %s AND course_id = %s
+                    """, (student_id, course_id))
+                    
+                    existing_cert = cursor.fetchone()
+                    print(f"Database: Existing certificate check: {existing_cert}")
+                    
+                    if existing_cert:
+                        return False, "Certificate already exists for this course"
+                    
+                    # Generate unique certificate ID
+                    certificate_id = f"CERT-{uuid.uuid4().hex[:8].upper()}"
+                    print(f"Database: Generated certificate ID: {certificate_id}")
+                    
+                    # Get student info
+                    cursor.execute("""
+                        SELECT student_name, email FROM students WHERE id = %s
+                    """, (student_id,))
+                    student_info = cursor.fetchone()
+                    print(f"Database: Student info: {student_info}")
+                    
+                    # Create certificate data
+                    certificate_data = {
+                        'student_name': student_info['student_name'],
+                        'student_email': student_info['email'],
+                        'course_name': result['course_name'],
+                        'completion_date': datetime.now().strftime('%Y-%m-%d'),
+                        'final_score': float(result['progress_percentage']),
+                        'certificate_id': certificate_id,
+                        'template': 'standard'
+                    }
+                    
+                    print(f"Database: Certificate data: {certificate_data}")
+                    
+                    # Insert certificate
+                    cursor.execute("""
+                        INSERT INTO certificates 
+                        (student_id, course_id, certificate_id, final_score, certificate_data)
+                        VALUES (%s, %s, %s, %s, %s)
+                    """, (
+                        student_id, 
+                        course_id, 
+                        certificate_id, 
+                        float(result['progress_percentage']),
+                        json.dumps(certificate_data)
+                    ))
+                    
+                    conn.commit()
+                    print(f"Database: Certificate inserted successfully")
+                    return True, certificate_id
+                    
+                except Exception as e:
+                    print(f"Database: Error generating certificate: {str(e)}")
+                    conn.rollback()
+                    return False, str(e)
+
+    def get_certificate_by_id(self, certificate_id):
+        """Get certificate details by certificate ID"""
+        with self.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT c.*, co.course_name, s.student_name, s.email
+                    FROM certificates c
+                    JOIN courses co ON c.course_id = co.id
+                    JOIN students s ON c.student_id = s.id
+                    WHERE c.certificate_id = %s
+                """, (certificate_id,))
+                return cursor.fetchone()
+
+    def update_certificate_status(self, certificate_id, status):
+        """Update certificate status (e.g., Downloaded)"""
+        with self.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    UPDATE certificates SET status = %s WHERE certificate_id = %s
+                """, (status, certificate_id))
+                conn.commit()
+                return cursor.rowcount > 0

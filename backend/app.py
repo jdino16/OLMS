@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, make_response
 from flask_cors import CORS
 from database import Database
 from config import Config
@@ -174,8 +174,87 @@ def get_instructor_modules():
         return jsonify({'error': 'Unauthorized'}), 401
     
     try:
-        modules = db.get_all_modules()
+        modules = db.get_instructor_modules(instructor_id)
         return jsonify({'success': True, 'modules': modules})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/instructor/courses', methods=['GET'])
+def get_instructor_courses():
+    instructor_id = session.get('instructor_id')
+    if not instructor_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        courses = db.get_instructor_courses(instructor_id)
+        return jsonify({'success': True, 'courses': courses})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/instructor/courses', methods=['POST'])
+def create_instructor_course():
+    instructor_id = session.get('instructor_id')
+    if not instructor_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    data = request.get_json()
+    required_fields = ['course_name', 'description', 'duration', 'level', 'status']
+    
+    for field in required_fields:
+        if not data.get(field):
+            return jsonify({'error': f'{field} is required'}), 400
+    
+    try:
+        # Add instructor_id to the course data
+        data['instructor_id'] = instructor_id
+        course_id = db.create_course(data)
+        if course_id:
+            # Fetch the created course to return
+            course = db.get_course_by_id(course_id)
+            return jsonify({'success': True, 'course': course}), 201
+        return jsonify({'error': 'Failed to create course'}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/instructor/courses/<int:course_id>', methods=['PUT'])
+def update_instructor_course(course_id):
+    instructor_id = session.get('instructor_id')
+    if not instructor_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    # Verify the course belongs to this instructor
+    try:
+        course = db.get_course_by_id(course_id)
+        if not course:
+            return jsonify({'error': 'Course not found'}), 404
+        if course.get('instructor_id') != instructor_id:
+            return jsonify({'error': 'Unauthorized to modify this course'}), 403
+        
+        data = request.get_json()
+        if db.update_course(course_id, data):
+            updated_course = db.get_course_by_id(course_id)
+            return jsonify({'success': True, 'course': updated_course})
+        return jsonify({'error': 'Failed to update course'}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/instructor/courses/<int:course_id>', methods=['DELETE'])
+def delete_instructor_course(course_id):
+    instructor_id = session.get('instructor_id')
+    if not instructor_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    # Verify the course belongs to this instructor
+    try:
+        course = db.get_course_by_id(course_id)
+        if not course:
+            return jsonify({'error': 'Course not found'}), 404
+        if course.get('instructor_id') != instructor_id:
+            return jsonify({'error': 'Unauthorized to delete this course'}), 403
+        
+        if db.delete_course(course_id):
+            return jsonify({'success': True})
+        return jsonify({'error': 'Failed to delete course'}), 500
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -2371,6 +2450,138 @@ def export_instructor_feedback():
         return jsonify({'success': True, 'data': feedback_data})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/instructor/student-progress-analytics', methods=['GET'])
+def get_student_progress_analytics():
+    instructor_id = session.get('instructor_id')
+    if not instructor_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        course_id = request.args.get('course_id')
+        student_id = request.args.get('student_id')
+        time_range = request.args.get('time_range', 'month')
+        
+        print(f"Fetching analytics for instructor {instructor_id}, course: {course_id}, student: {student_id}, time: {time_range}")
+        
+        analytics = db.get_student_progress_analytics(
+            instructor_id, 
+            course_id, 
+            student_id, 
+            time_range
+        )
+        
+        print(f"Analytics fetched successfully: {len(analytics.get('courses', []))} courses, {len(analytics.get('students', []))} students")
+        
+        return jsonify({'success': True, 'analytics': analytics})
+    except Exception as e:
+        print(f"Error in student progress analytics: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/student/certificates', methods=['GET'])
+def get_student_certificates():
+    student_id = session.get('student_id')
+    if not student_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        certificates = db.get_student_certificates(student_id)
+        return jsonify({'success': True, 'certificates': certificates})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/student/completed-courses', methods=['GET'])
+def get_completed_courses():
+    student_id = session.get('student_id')
+    if not student_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        courses = db.get_completed_courses_for_certificates(student_id)
+        return jsonify({'success': True, 'courses': courses})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/student/generate-certificate', methods=['POST'])
+def generate_certificate():
+    student_id = session.get('student_id')
+    if not student_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        course_id = data.get('course_id')
+        
+        print(f"Generating certificate for student {student_id}, course {course_id}")
+        print(f"Request data: {data}")
+        
+        if not course_id:
+            return jsonify({'error': 'Course ID is required'}), 400
+        
+        success, result = db.generate_certificate(student_id, course_id)
+        
+        print(f"Certificate generation result: success={success}, result={result}")
+        
+        if success:
+            return jsonify({
+                'success': True, 
+                'message': 'Certificate generated successfully',
+                'certificate_id': result
+            })
+        else:
+            return jsonify({'error': result}), 400
+            
+    except Exception as e:
+        print(f"Error in generate_certificate endpoint: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/student/download-certificate/<certificate_id>', methods=['GET'])
+def download_certificate(certificate_id):
+    student_id = session.get('student_id')
+    if not student_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        certificate = db.get_certificate_by_id(certificate_id)
+        if not certificate:
+            return jsonify({'error': 'Certificate not found'}), 404
+        
+        # Check if certificate belongs to the student
+        if certificate['student_id'] != student_id:
+            return jsonify({'error': 'Unauthorized'}), 401
+        
+        # Update status to downloaded
+        db.update_certificate_status(certificate_id, 'Downloaded')
+        
+        # For now, return a simple text response
+        # In a real implementation, you would generate a PDF
+        certificate_text = f"""
+Certificate of Completion
+
+This is to certify that
+{certificate['student_name']}
+has successfully completed the course
+{certificate['course_name']}
+
+Completion Date: {certificate['completion_date']}
+Certificate ID: {certificate['certificate_id']}
+Final Score: {certificate['final_score']}%
+
+This certificate is issued by the Learning Management System.
+        """
+        
+        response = make_response(certificate_text)
+        response.headers['Content-Type'] = 'text/plain'
+        response.headers['Content-Disposition'] = f'attachment; filename=certificate-{certificate_id}.txt'
+        
+        return response
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

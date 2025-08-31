@@ -1,22 +1,6 @@
-.dashboard-content {
-  padding: 25px;
-  animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .dashboard-grid {
   display: grid;
-  gap: 30px;
+  gap: 25px;
   max-width: 1400px;
   margin: 0;
   padding: 0;
@@ -27,25 +11,11 @@
 .activities-section h2,
 .quick-actions-section h2 {
   margin: 0 0 24px 0;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   color: #2c3e50;
   position: relative;
-  padding-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.stats-section h2::before,
-.activities-section h2::before,
-.quick-actions-section h2::before {
-  content: '';
-  display: inline-block;
-  width: 8px;
-  height: 24px;
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  border-radius: 4px;
+  padding-bottom: 8px;
 }
 
 .stats-section h2::after,
@@ -71,36 +41,17 @@
   background: white;
   border-radius: 16px;
   padding: 28px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   gap: 20px;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: 1px solid rgba(0, 0, 0, 0.05);
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #007bff, #0056b3);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s ease;
-}
-
-.stat-card:hover::before {
-  transform: scaleX(1);
 }
 
 .stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .stat-icon {
@@ -113,26 +64,7 @@
   justify-content: center;
   background: linear-gradient(135deg, #007bff, #0056b3);
   color: white;
-  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-  transition: all 0.3s ease;
-  position: relative;
-  z-index: 1;
-}
-
-.stat-icon.pulse {
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
-  }
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
 .stat-content h3 {
@@ -140,11 +72,6 @@
   font-size: 32px;
   font-weight: 700;
   color: #2c3e50;
-  transition: all 0.3s ease;
-}
-
-.stat-card:hover .stat-content h3 {
-  color: #007bff;
 }
 
 .stat-content p {
@@ -161,7 +88,7 @@
   background: white;
   border-radius: 16px;
   padding: 28px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
@@ -180,24 +107,12 @@
   background-color: #f8f9fa;
   transition: all 0.3s ease;
   border: 1px solid rgba(0, 0, 0, 0.05);
-  animation: slideInRight 0.5s ease both;
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
 }
 
 .activity-item:hover {
   background-color: #e9ecef;
-  transform: translateX(8px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .activity-icon {
@@ -210,12 +125,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
-  transition: all 0.3s ease;
-}
-
-.activity-item:hover .activity-icon {
-  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.2);
 }
 
 .activity-content p {
@@ -234,15 +144,6 @@
   text-align: center;
   padding: 40px;
   color: #666;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.no-activities i {
-  font-size: 48px;
-  color: #ddd;
 }
 
 /* Quick Actions Section */
@@ -250,7 +151,7 @@
   background: white;
   border-radius: 16px;
   padding: 28px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
@@ -275,61 +176,33 @@
   font-weight: 600;
   color: #2c3e50;
   text-decoration: none;
-  position: relative;
-  overflow: hidden;
-}
-
-.action-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transition: left 0.5s ease;
-}
-
-.action-btn:hover::before {
-  left: 100%;
 }
 
 .action-btn:hover {
   background: linear-gradient(135deg, #007bff, #0056b3);
   color: white;
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
   border-color: #007bff;
 }
 
 .action-icon {
-  font-size: 32px;
-  transition: all 0.3s ease;
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 28px;
+  transition: transform 0.3s ease;
 }
 
 .action-btn:hover .action-icon {
-  transform: scale(1.2) rotate(10deg);
-  -webkit-text-fill-color: white;
+  transform: scale(1.1);
 }
 
 /* Loading and Error States */
 .loading {
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 400px;
   font-size: 18px;
   color: #666;
-  gap: 20px;
-}
-
-.loading-spinner {
-  font-size: 40px;
-  color: #007bff;
 }
 
 .error-message {
@@ -340,27 +213,15 @@
   font-size: 18px;
   color: #dc3545;
   background: #f8d7da;
-  border-radius: 12px;
-  padding: 30px;
-  gap: 15px;
-  border-left: 5px solid #dc3545;
-  animation: shake 0.5s ease;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-  20%, 40%, 60%, 80% { transform: translateX(5px); }
+  border-radius: 8px;
+  padding: 20px;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .dashboard-content {
-    padding: 15px;
-  }
-  
   .dashboard-grid {
     gap: 20px;
+    padding: 0 10px;
   }
   
   .stats-grid {
@@ -376,18 +237,12 @@
   }
   
   .stat-content h3 {
-    font-size: 28px;
+    font-size: 24px;
   }
   
   .activities-section,
   .quick-actions-section {
     padding: 20px;
-  }
-  
-  .stats-section h2,
-  .activities-section h2,
-  .quick-actions-section h2 {
-    font-size: 20px;
   }
 }
 
@@ -399,18 +254,10 @@
   .stat-card {
     flex-direction: column;
     text-align: center;
-    gap: 15px;
   }
   
   .activity-item {
     flex-direction: column;
     text-align: center;
-    gap: 12px;
-  }
-  
-  .activity-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
   }
 }

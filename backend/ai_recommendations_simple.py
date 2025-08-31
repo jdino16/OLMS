@@ -9,6 +9,15 @@ class SimpleAIRecommendationEngine:
     def prepare_course_features(self, courses):
         """Prepare course features for AI analysis"""
         try:
+            # Add default category if missing
+            for course in courses:
+                if 'category' not in course:
+                    course['category'] = 'General'
+                if 'level' not in course:
+                    course['level'] = 'Beginner'
+                if 'difficulty' not in course:
+                    course['difficulty'] = 1
+                    
             self.course_features = courses
             print(f"Prepared {len(courses)} courses for AI analysis")
             return True
@@ -98,6 +107,8 @@ class SimpleAIRecommendationEngine:
                 if category_counts:
                     top_categories = sorted(category_counts.items(), key=lambda x: x[1], reverse=True)[:3]
                     profile['preferred_categories'] = [cat for cat, count in top_categories]
+                else:
+                    profile['preferred_categories'] = ['General']  # Default category
                 
                 # Calculate completion rate
                 total_enrolled = len(enrolled_courses) + len(completed_courses)
@@ -107,7 +118,7 @@ class SimpleAIRecommendationEngine:
             
         except Exception as e:
             print(f"Error analyzing learning profile: {e}")
-            return {'preferred_level': 'Beginner', 'preferred_categories': [], 'learning_pace': 'normal'}
+            return {'preferred_level': 'Beginner', 'preferred_categories': ['General'], 'learning_pace': 'normal'}
     
     def _calculate_course_score(self, course, learning_profile):
         """Calculate recommendation score for a course"""
@@ -131,6 +142,8 @@ class SimpleAIRecommendationEngine:
                 category_score = 1.0
             elif learning_profile['preferred_categories']:
                 category_score = 0.5
+            else:
+                category_score = 0.3  # Default score for new categories
             
             score += category_score * 0.25
             

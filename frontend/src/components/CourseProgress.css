@@ -1,16 +1,13 @@
-/* Enhanced Course Progress CSS with Animations and Icons */
 .course-progress {
   padding: 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   color: white;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .progress-header {
   text-align: center;
   margin-bottom: 30px;
-  animation: fadeInDown 0.8s ease-out;
 }
 
 .progress-header h2 {
@@ -38,7 +35,6 @@
 /* Analytics Overview */
 .analytics-overview {
   margin-bottom: 40px;
-  animation: slideInUp 0.8s ease-out;
 }
 
 .analytics-grid {
@@ -57,30 +53,11 @@
   align-items: center;
   gap: 20px;
   transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.analytics-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
 }
 
 .analytics-card:hover {
   transform: translateY(-5px);
   background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.analytics-card:hover::before {
-  opacity: 1;
 }
 
 .analytics-icon {
@@ -92,36 +69,21 @@
   justify-content: center;
   font-size: 24px;
   background: rgba(255, 255, 255, 0.2);
-  position: relative;
-  z-index: 1;
-  transition: all 0.3s ease;
-}
-
-.analytics-card:hover .analytics-icon {
-  transform: scale(1.1) rotate(5deg);
 }
 
 .analytics-icon.completed {
-  background: linear-gradient(135deg, rgba(40, 167, 69, 0.3) 0%, rgba(40, 167, 69, 0.5) 100%);
+  background: rgba(40, 167, 69, 0.3);
   color: #28a745;
-  box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
 }
 
 .analytics-icon.active {
-  background: linear-gradient(135deg, rgba(0, 123, 255, 0.3) 0%, rgba(0, 123, 255, 0.5) 100%);
+  background: rgba(0, 123, 255, 0.3);
   color: #007bff;
-  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
 }
 
 .analytics-icon.time {
-  background: linear-gradient(135deg, rgba(255, 193, 7, 0.3) 0%, rgba(255, 193, 7, 0.5) 100%);
+  background: rgba(255, 193, 7, 0.3);
   color: #ffc107;
-  box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
-}
-
-.analytics-content {
-  position: relative;
-  z-index: 1;
 }
 
 .analytics-content h3 {
@@ -151,7 +113,6 @@
   margin: 0 0 20px 0;
   font-size: 24px;
   color: #ffd700;
-  animation: fadeInLeft 0.8s ease-out;
 }
 
 /* Progress Cards */
@@ -163,34 +124,6 @@
   color: #2c3e50;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  animation: slideInRight 0.8s ease-out;
-  animation-fill-mode: both;
-}
-
-.progress-card:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-.progress-card:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-.progress-card:nth-child(4) {
-  animation-delay: 0.3s;
-}
-
-.progress-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 5px;
-  height: 100%;
-  background: linear-gradient(to bottom, #667eea, #764ba2);
-  opacity: 0.8;
-  transition: width 0.3s ease;
 }
 
 .progress-card:hover {
@@ -198,22 +131,10 @@
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
 
-.progress-card:hover::before {
-  width: 8px;
-}
-
 .course-info h4 {
   margin: 0 0 10px 0;
   font-size: 20px;
   color: #2c3e50;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.course-info h4::before {
-  content: '📚';
-  font-size: 24px;
 }
 
 .course-info p {
@@ -227,7 +148,6 @@
   gap: 20px;
   font-size: 14px;
   margin-bottom: 20px;
-  flex-wrap: wrap;
 }
 
 .course-meta span {
@@ -235,9 +155,6 @@
   align-items: center;
   gap: 5px;
   color: #95a5a6;
-  padding: 5px 10px;
-  background: rgba(236, 240, 241, 0.5);
-  border-radius: 20px;
 }
 
 .course-meta i {
@@ -258,38 +175,12 @@
   background: #ecf0f1;
   border-radius: 6px;
   overflow: hidden;
-  position: relative;
 }
 
 .progress-fill {
   height: 100%;
   border-radius: 6px;
   transition: width 0.5s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.progress-fill::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background-image: linear-gradient(
-    -45deg,
-    rgba(255, 255, 255, 0.2) 25%,
-    transparent 25%,
-    transparent 50%,
-    rgba(255, 255, 255, 0.2) 50%,
-    rgba(255, 255, 255, 0.2) 75%,
-    transparent 75%,
-    transparent
-  );
-  z-index: 1;
-  background-size: 20px 20px;
-  animation: move 1s linear infinite;
-  overflow: hidden;
 }
 
 .progress-percentage {
@@ -311,24 +202,12 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
-  padding: 10px;
-  background: rgba(236, 240, 241, 0.5);
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.stat:hover {
-  background: rgba(236, 240, 241, 0.8);
-  transform: translateY(-2px);
 }
 
 .stat-label {
   font-size: 12px;
   color: #95a5a6;
   text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 5px;
 }
 
 .stat-value {
@@ -341,10 +220,9 @@
 .course-actions {
   display: flex;
   gap: 10px;
-  flex-wrap: wrap;
 }
 
-.start-session-btn, .end-session-btn, .view-course-btn, .feedback-btn {
+.start-session-btn, .end-session-btn, .view-course-btn {
   padding: 10px 20px;
   border: none;
   border-radius: 8px;
@@ -355,23 +233,6 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  position: relative;
-  overflow: hidden;
-}
-
-.start-session-btn::before, .end-session-btn::before, .view-course-btn::before, .feedback-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: 0.5s;
-}
-
-.start-session-btn:hover::before, .end-session-btn:hover::before, .view-course-btn:hover::before, .feedback-btn:hover::before {
-  left: 100%;
 }
 
 .start-session-btn {
@@ -382,7 +243,6 @@
 .start-session-btn:hover {
   background: #218838;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
 }
 
 .end-session-btn {
@@ -393,7 +253,6 @@
 .end-session-btn:hover {
   background: #c82333;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
 }
 
 .view-course-btn {
@@ -401,22 +260,20 @@
   color: white;
 }
 
-.view-course-btn:hover {
-  background: #0056b3;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
-}
+ .view-course-btn:hover {
+   background: #0056b3;
+   transform: translateY(-2px);
+ }
 
-.feedback-btn {
-  background: #17a2b8;
-  color: white;
-}
+ .feedback-btn {
+   background: #17a2b8;
+   color: white;
+ }
 
-.feedback-btn:hover {
-  background: #138496;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(23, 162, 184, 0.4);
-}
+ .feedback-btn:hover {
+   background: #138496;
+   transform: translateY(-2px);
+ }
 
 /* Course Details Panel */
 .course-details-panel {
@@ -428,7 +285,6 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   max-height: 600px;
   overflow-y: auto;
-  animation: zoomIn 0.5s ease-out;
 }
 
 .details-header {
@@ -467,7 +323,6 @@
 .close-details-btn:hover {
   background: #f0f0f0;
   color: #2c3e50;
-  transform: rotate(90deg);
 }
 
 .detail-section {
@@ -480,9 +335,6 @@
   color: #2c3e50;
   border-left: 4px solid #667eea;
   padding-left: 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .detail-grid {
@@ -501,9 +353,6 @@
   font-size: 12px;
   color: #95a5a6;
   text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 5px;
 }
 
 .detail-value {
@@ -528,7 +377,6 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  animation: grow 1s ease-out;
 }
 
 .circle-progress {
@@ -539,7 +387,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 0 4px #667eea;
 }
 
 .circle-percentage {
@@ -561,13 +408,6 @@
   align-items: center;
   padding: 8px 0;
   border-bottom: 1px solid #ecf0f1;
-  transition: all 0.3s ease;
-}
-
-.breakdown-item:hover {
-  background: rgba(236, 240, 241, 0.5);
-  padding-left: 10px;
-  border-radius: 5px;
 }
 
 .breakdown-item:last-child {
@@ -577,9 +417,6 @@
 .breakdown-label {
   font-size: 14px;
   color: #7f8c8d;
-  display: flex;
-  align-items: center;
-  gap: 5px;
 }
 
 .breakdown-value {
@@ -607,23 +444,6 @@
   justify-content: center;
   gap: 8px;
   font-size: 14px;
-  position: relative;
-  overflow: hidden;
-}
-
-.action-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: 0.5s;
-}
-
-.action-btn:hover::before {
-  left: 100%;
 }
 
 .action-btn.primary {
@@ -634,7 +454,6 @@
 .action-btn.primary:hover {
   background: #5a6fd8;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
 .action-btn.secondary {
@@ -645,7 +464,6 @@
 .action-btn.secondary:hover {
   background: #5a6268;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
 }
 
 .action-btn.success {
@@ -653,36 +471,32 @@
   color: white;
 }
 
-.action-btn.success:hover {
-  background: #218838;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
-}
+ .action-btn.success:hover {
+   background: #218838;
+   transform: translateY(-2px);
+ }
 
-.action-btn.feedback {
-  background: #17a2b8;
-  color: white;
-}
+ .action-btn.feedback {
+   background: #17a2b8;
+   color: white;
+ }
 
-.action-btn.feedback:hover {
-  background: #138496;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(23, 162, 184, 0.4);
-}
+ .action-btn.feedback:hover {
+   background: #138496;
+   transform: translateY(-2px);
+ }
 
 /* No Progress State */
 .no-progress {
   text-align: center;
   padding: 60px 20px;
   color: #7f8c8d;
-  animation: fadeIn 1s ease-out;
 }
 
 .no-progress i {
   font-size: 48px;
   margin-bottom: 20px;
   opacity: 0.5;
-  animation: bounce 2s infinite;
 }
 
 .no-progress p {
@@ -702,29 +516,11 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  position: relative;
-  overflow: hidden;
-}
-
-.browse-courses-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: 0.5s;
-}
-
-.browse-courses-btn:hover::before {
-  left: 100%;
 }
 
 .browse-courses-btn:hover {
   background: #5a6fd8;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
 /* Recent Study Sessions */
@@ -734,20 +530,12 @@
   border-radius: 15px;
   padding: 25px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  animation: fadeInUp 0.8s ease-out;
 }
 
 .recent-sessions h3 {
   margin: 0 0 20px 0;
   font-size: 20px;
   color: #ffd700;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.recent-sessions h3::before {
-  content: '⏱️';
 }
 
 .sessions-list {
@@ -764,67 +552,32 @@
   justify-content: space-between;
   align-items: center;
   transition: all 0.3s ease;
-  animation: slideInUp 0.5s ease-out;
-  animation-fill-mode: both;
-}
-
-.session-item:nth-child(1) {
-  animation-delay: 0.1s;
-}
-
-.session-item:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.session-item:nth-child(3) {
-  animation-delay: 0.3s;
-}
-
-.session-item:nth-child(4) {
-  animation-delay: 0.4s;
-}
-
-.session-item:nth-child(5) {
-  animation-delay: 0.5s;
 }
 
 .session-item:hover {
   background: rgba(255, 255, 255, 0.15);
-  transform: translateX(5px);
 }
 
 .session-info h4 {
   margin: 0 0 5px 0;
   font-size: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .lesson-name {
   margin: 0 0 5px 0;
   font-size: 14px;
   opacity: 0.8;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .session-time {
   font-size: 12px;
   opacity: 0.7;
-  display: flex;
-  align-items: center;
-  gap: 5px;
 }
 
 .session-duration {
   font-weight: 600;
   font-size: 14px;
   color: #ffd700;
-  display: flex;
-  align-items: center;
-  gap: 5px;
 }
 
 /* Loading and Error States */
@@ -835,7 +588,6 @@
   justify-content: center;
   padding: 60px 20px;
   text-align: center;
-  animation: fadeIn 1s ease-out;
 }
 
 .loading-spinner {
@@ -852,7 +604,6 @@
   font-size: 48px;
   color: #e74c3c;
   margin-bottom: 20px;
-  animation: shake 0.5s ease-in-out;
 }
 
 .retry-btn {
@@ -872,10 +623,9 @@
 .retry-btn:hover {
   background: #c0392b;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
 }
 
-/* Enhanced Animations */
+/* Animations */
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -884,124 +634,6 @@
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.1); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes zoomIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes grow {
-  from {
-    transform: scale(0);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-
-@keyframes move {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: 20px 20px;
-  }
-}
-
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-20px);
-  }
-  60% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-5px); }
-  40%, 80% { transform: translateX(5px); }
 }
 
 /* Responsive Design */
@@ -1048,11 +680,5 @@
   .progress-overview {
     flex-direction: column;
     text-align: center;
-  }
-  
-  .session-item {
-    flex-direction: column;
-    text-align: center;
-    gap: 10px;
   }
 }

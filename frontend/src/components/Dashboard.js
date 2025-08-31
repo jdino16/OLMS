@@ -6,7 +6,6 @@ const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [hoveredCard, setHoveredCard] = useState(null);
 
   useEffect(() => {
     fetchDashboardData();
@@ -27,12 +26,7 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="dashboard-content">
-        <div className="loading">
-          <div className="loading-spinner">
-            <i className="fas fa-circle-notch fa-spin"></i>
-          </div>
-          <p>Loading dashboard...</p>
-        </div>
+        <div className="loading">Loading dashboard...</div>
       </div>
     );
   }
@@ -40,10 +34,7 @@ const Dashboard = () => {
   if (error) {
     return (
       <div className="dashboard-content">
-        <div className="error-message">
-          <i className="fas fa-exclamation-triangle"></i>
-          {error}
-        </div>
+        <div className="error-message">{error}</div>
       </div>
     );
   }
@@ -55,12 +46,8 @@ const Dashboard = () => {
         <div className="stats-section">
           <h2>Overview</h2>
           <div className="stats-grid">
-            <div 
-              className="stat-card"
-              onMouseEnter={() => setHoveredCard('instructors')}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
-              <div className={`stat-icon users ${hoveredCard === 'instructors' ? 'pulse' : ''}`}>
+            <div className="stat-card">
+              <div className="stat-icon users">
                 <i className="fas fa-users"></i>
               </div>
               <div className="stat-content">
@@ -69,12 +56,8 @@ const Dashboard = () => {
               </div>
             </div>
             
-            <div 
-              className="stat-card"
-              onMouseEnter={() => setHoveredCard('students')}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
-              <div className={`stat-icon orders ${hoveredCard === 'students' ? 'pulse' : ''}`}>
+            <div className="stat-card">
+              <div className="stat-icon orders">
                 <i className="fas fa-user-graduate"></i>
               </div>
               <div className="stat-content">
@@ -83,12 +66,8 @@ const Dashboard = () => {
               </div>
             </div>
             
-            <div 
-              className="stat-card"
-              onMouseEnter={() => setHoveredCard('courses')}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
-              <div className={`stat-icon revenue ${hoveredCard === 'courses' ? 'pulse' : ''}`}>
+            <div className="stat-card">
+              <div className="stat-icon revenue">
                 <i className="fas fa-book"></i>
               </div>
               <div className="stat-content">
@@ -97,12 +76,8 @@ const Dashboard = () => {
               </div>
             </div>
             
-            <div 
-              className="stat-card"
-              onMouseEnter={() => setHoveredCard('modules')}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
-              <div className={`stat-icon pending ${hoveredCard === 'modules' ? 'pulse' : ''}`}>
+            <div className="stat-card">
+              <div className="stat-icon pending">
                 <i className="fas fa-cube"></i>
               </div>
               <div className="stat-content">
@@ -118,11 +93,7 @@ const Dashboard = () => {
           <h2>Recent Activities</h2>
           <div className="activities-list">
             {dashboardData?.recent_activities?.map((activity, index) => (
-              <div 
-                key={index} 
-                className="activity-item"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
+              <div key={index} className="activity-item">
                 <div className="activity-icon">
                   <i className="fas fa-info-circle"></i>
                 </div>
@@ -133,7 +104,6 @@ const Dashboard = () => {
               </div>
             )) || (
               <div className="no-activities">
-                <i className="fas fa-inbox"></i>
                 <p>No recent activities</p>
               </div>
             )}
