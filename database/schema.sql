@@ -44,6 +44,7 @@ CREATE TABLE students (
 );
 
 -- Courses table
+-- Added missing instructor_id field to courses table
 CREATE TABLE courses (
     id INT AUTO_INCREMENT PRIMARY KEY,
     course_name VARCHAR(100) NOT NULL,
@@ -51,8 +52,10 @@ CREATE TABLE courses (
     duration VARCHAR(50),
     level ENUM('Beginner', 'Intermediate', 'Advanced') DEFAULT 'Beginner',
     status ENUM('Active', 'Inactive') DEFAULT 'Active',
+    instructor_id INT NULL,  -- ✅ ADDED THIS FIELD
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (instructor_id) REFERENCES instructors(id) ON DELETE SET NULL  -- ✅ ADDED FOREIGN KEY
 );
 
 -- Modules table
@@ -117,15 +120,36 @@ CREATE TABLE lesson_progress (
     UNIQUE KEY unique_lesson_progress (student_id, lesson_id)
 );
 
+-- Study Sessions table to track learning sessions
+CREATE TABLE study_sessions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,
+    course_id INT NOT NULL,
+    lesson_id INT NULL,
+    start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    end_time TIMESTAMP NULL,
+    study_time INT DEFAULT 0 COMMENT 'Study time in minutes',
+    completed_pages INT DEFAULT 0,
+    status ENUM('active', 'completed', 'paused') DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE SET NULL,
+    INDEX idx_student_course (student_id, course_id),
+    INDEX idx_start_time (start_time),
+    INDEX idx_status (status)
+);
+
 -- Insert default admin user
 INSERT INTO admin (username, password) VALUES 
 ('admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918');
 
 -- Insert sample data
-INSERT INTO courses (course_name, description, duration, level) VALUES
-('Web Development Fundamentals', 'Learn the basics of HTML, CSS, and JavaScript', '8 weeks', 'Beginner'),
-('Advanced JavaScript', 'Master JavaScript ES6+ and modern frameworks', '10 weeks', 'Advanced'),
-('Database Management', 'Learn SQL and database design principles', '6 weeks', 'Intermediate');
+INSERT INTO courses (course_name, description, duration, level, instructor_id) VALUES
+('Web Development Fundamentals', 'Learn the basics of HTML, CSS, and JavaScript', '8 weeks', 'Beginner', 1),
+('Advanced JavaScript', 'Master JavaScript ES6+ and modern frameworks', '10 weeks', 'Advanced', 2),
+('Database Management', 'Learn SQL and database design principles', '6 weeks', 'Intermediate', 3);
 
 INSERT INTO modules (module_name, course_id, description) VALUES
 ('HTML Basics', 1, 'Introduction to HTML structure and elements'),
